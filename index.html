@@ -820,7 +820,33 @@ function renderPos(){const g=gw();setAccent(g.color);document.getElementById('s3
 function saveNotiz(){if(!raum().notiz)raum().notiz={};raum().notiz[aktGewerk]=document.getElementById('rnotiz').value;save()}
 
 // ---- Position wählen (Katalog) ----
-function openWaehlen(){const arr=allStd(aktGewerk);document.getElementById('catlist').innerHTML=arr.map((s,i)=>`<button class="catbtn" oncontextmenu="return tplMenu(event,'${s.id}')" onclick="addFromStd('${s.id}')"><span>${esc(s.label)}${s.custom?' ★':''}</span><span class="u">${esc(s.einheit)}</span></button>`).join('');document.getElementById('ovWaehlen').classList.add('open')}
+let _openCat=null; // aktuell aufgeklappte Kategorie im Auswahl-Sheet
+// gewünschte Reihenfolge der Oberkategorien je Gewerk
+const CAT_ORDER={trockenbau:['Wände','Decken','Boden','Dachgeschoss','Sonstiges'],maler:['Wände','Decken','Sonstiges'],fliesen:['Wand','Boden','Sonstiges'],boden:['Baustelle/Schutz','Altbelag','Entsorgung','Untergrund prüfen','Untergrund vorbereiten','Spachtel/Ausgleich','Feuchtigkeitsschutz','Trittschall/Unterlage','Vinyl/Design','Laminat','Parkett','Linoleum/PVC/Kautschuk','Sockelleisten','Übergänge/Profile','Türbereiche','Ausschnitte','Treppen','Abschluss']};
+function catSort(gw,keys){const order=CAT_ORDER[gw]||[];const known=order.filter(k=>keys.includes(k));const extra=keys.filter(k=>!order.includes(k)).sort();return [...known,...extra];}
+function openWaehlen(){
+  const arr=allStd(aktGewerk);
+  // nach Gruppe bündeln
+  const groups={};
+  arr.forEach(s=>{const g=s.grp||'Sonstiges';(groups[g]=groups[g]||[]).push(s);});
+  const cats=catSort(aktGewerk,Object.keys(groups));
+  if(_openCat===null||!cats.includes(_openCat))_openCat=cats[0]||null;
+  const g=gw();
+  let html='';
+  cats.forEach(cat=>{
+    const items=groups[cat];
+    const open=(cat===_openCat);
+    html+=`<button class="catgrp" onclick="toggleCat('${esc(cat)}')" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1.5px solid ${open?g.color:'#222537'};border-radius:10px;background:${open?'color-mix(in srgb,'+g.color+' 12%,#12141c)':'#12141c'};color:${open?g.color:'#dde2ec'};font-weight:800;font-size:15px;cursor:pointer;margin-bottom:6px">
+      <span>${esc(cat.toUpperCase())} <span style="color:#4a5568;font-weight:600;font-size:12px">(${items.length})</span></span>
+      <span style="color:${open?g.color:'#4a5568'}">${open?'▾':'▸'}</span></button>`;
+    if(open){
+      html+=items.map(s=>`<button class="catbtn" oncontextmenu="return tplMenu(event,'${s.id}')" onclick="addFromStd('${s.id}')"><span>${esc(s.label)}${s.custom?' ★':''}</span><span class="u">${esc(s.einheit)}</span></button>`).join('');
+    }
+  });
+  document.getElementById('catlist').innerHTML=html;
+  document.getElementById('ovWaehlen').classList.add('open');
+}
+function toggleCat(cat){_openCat=(_openCat===cat)?null:cat;openWaehlen();}
 function addFromStd(id){const s=allStd(aktGewerk).find(x=>x.id===id);if(!s)return;const p={id:'p'+Date.now(),label:s.label,calc:s.calc,einheit:s.einheit,felder:{},anzahl:1,abzug:0,isAbzug:!!s.abzug,faktor:1,gruppe:s.grp||'Positionen',staender:!!s.staender};posArr().push(p);save();close_('ovWaehlen');renderPos();openEdit(posArr().length-1)}
 function tplMenu(e,id){e.preventDefault();const s=(CUSTOM[aktGewerk]||[]).find(x=>x.id===id);if(!s){toast('Nur eigene Vorlagen',true);return false}const a=prompt('Vorlage umbenennen (leer = löschen):',s.label);if(a===null)return false;if(a.trim()===''){CUSTOM[aktGewerk]=CUSTOM[aktGewerk].filter(x=>x.id!==id);toast('Vorlage gelöscht')}else{s.label=a.trim();toast('Umbenannt')}metaPut('custom',CUSTOM);openWaehlen();return false}
 
