@@ -1,5 +1,5 @@
 // AufmaßPro Service Worker
-const CACHE = 'aufmasspro-v3';
+const CACHE = 'aufmasspro-v8';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function(e){
@@ -16,7 +16,6 @@ self.addEventListener('fetch', function(e){
   var req = e.request;
   if (req.method !== 'GET') return;
   var accept = req.headers.get('accept') || '';
-  // HTML / Navigation: erst Netz (frische Version), dann Cache (offline)
   if (req.mode === 'navigate' || accept.indexOf('text/html') !== -1) {
     e.respondWith(
       fetch(req).then(function(res){
@@ -29,7 +28,6 @@ self.addEventListener('fetch', function(e){
     );
     return;
   }
-  // Übrige Assets: erst Cache, dann Netz
   e.respondWith(
     caches.match(req).then(function(r){
       return r || fetch(req).then(function(res){

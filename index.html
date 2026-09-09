@@ -942,7 +942,23 @@ function openEdit(idx){editId=idx;const g=gw();let p;if(idx==null){p={id:'p'+Dat
   if(!p.fotos)p.fotos=[];window._ep=p;renderPosEditorFotos();editFields();document.getElementById('ovEdit').classList.add('open')}
 function editCalc(c){window._ep.calc=c;document.getElementById('eCalc').querySelectorAll('.sgb').forEach(b=>b.classList.toggle('on',b.textContent===CALC.find(x=>x.id===c).l));editFields()}
 function editFields(){const p=window._ep;const c=CALC.find(x=>x.id===p.calc);const f=p.felder||{};
-  document.getElementById('eFields').innerHTML=c.f.map((k,i)=>`<div style="margin-bottom:10px"><span class="lbl">${c.lab[i]}</span><input class="si" inputmode="decimal" id="ef_${k}" value="${esc(f[k]||'')}" oninput="liveRes()" placeholder="0"/></div>`).join('');liveRes()}
+  let html='';
+  if(c.id!=='direkt'){html+=`<button class="btn btg bblk" style="margin-bottom:10px" onclick="voiceMasse()">🎤 Maße sprechen (z.B. „3,47 mal 2,36“)</button>`;}
+  else {html+=`<button class="btn btg bblk" style="margin-bottom:10px" onclick="voiceMasse()">🎤 Wert sprechen</button>`;}
+  html+=c.f.map((k,i)=>`<div style="margin-bottom:10px"><span class="lbl">${c.lab[i]}</span><input class="si" inputmode="decimal" id="ef_${k}" value="${esc(f[k]||'')}" oninput="liveRes()" placeholder="0"/></div>`).join('');
+  document.getElementById('eFields').innerHTML=html;liveRes()}
+function voiceMasse(){voice(function(t){
+  const p=window._ep;const c=CALC.find(x=>x.id===p.calc);
+  // Zahlen aus dem Diktat holen (Komma/Punkt/„mal“/„x“ als Trenner)
+  let x=' '+t.toLowerCase()+' ';
+  x=x.replace(/[,]/g,'.').replace(/\bkomma\b/g,'.').replace(/\bpunkt\b/g,'.');
+  x=x.replace(/(\d)\s*\.\s*((?:\d\s*){1,4})/g,function(m,i,d){return ' '+i+'.'+d.replace(/\D/g,'')+' ';});
+  const nums=(x.match(/\d+(?:\.\d+)?/g)||[]).map(function(n){return n.replace('.',',');});
+  if(!nums.length){toast('Keine Zahl erkannt',true);return;}
+  // Der Reihe nach in die vorhandenen Felder füllen
+  c.f.forEach(function(k,i){const el=document.getElementById('ef_'+k);if(el&&nums[i]!=null)el.value=nums[i];});
+  liveRes();toast('Maße übernommen');
+},'text');}
 function liveRes(){const p=window._ep;const c=CALC.find(x=>x.id===p.calc);const f={};c.f.forEach(k=>{const el=document.getElementById('ef_'+k);if(el)f[k]=el.value});const tmp={calc:p.calc,felder:f,anzahl:document.getElementById('eAnz').value,abzug:document.getElementById('eAbzug').value,faktor:p.faktor||1};document.getElementById('eRes').textContent=fmt(calcWert(tmp))+' '+(document.getElementById('eEinheit').value||'');const u=calcUmfang(tmp);document.getElementById('eUmf').textContent=u>0?fmt(u)+' m':'–'}
 document.addEventListener('input',e=>{if(['eAnz','eAbzug','eEinheit'].includes(e.target.id))liveRes()});
 function saveEdit(){const p=window._ep;p.label=document.getElementById('eLabel').value.trim()||'Position';const c=CALC.find(x=>x.id===p.calc);p.felder={};c.f.forEach(k=>{p.felder[k]=(document.getElementById('ef_'+k)||{}).value||''});p.anzahl=toNum(document.getElementById('eAnz').value)||1;p.abzug=toNum(document.getElementById('eAbzug').value);p.einheit=document.getElementById('eEinheit').value||'m²';p.isAbzug=document.getElementById('eIsAbzug').checked;
