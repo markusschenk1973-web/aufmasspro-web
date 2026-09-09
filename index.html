@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="AufmaßPro"/>
+<meta name="theme-color" content="#0e1016"/>
+<title>AufmaßPro</title>
+<link rel="apple-touch-icon" href="icon-512.png"/>
+<link rel="manifest" href="manifest.json"/>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+body{background:#0e1016;color:#dde2ec;font-family:system-ui,sans-serif;padding-bottom:96px}
+button,input,textarea,select{font-family:inherit}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+#hd{background:#13161f;border-bottom:1px solid #222537;padding:14px 16px 10px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:flex-start}
+#hd h1{font-size:19px;font-weight:900;color:var(--accent,#3b82f6);margin:0}
+#hd p{font-size:12px;color:#4a5568;margin:3px 0 0}
+.folder{width:44px;height:44px;border-radius:12px;border:1px solid #222537;background:#181b26;font-size:20px;cursor:pointer;flex-shrink:0}
+#prog{display:flex;gap:5px;margin:10px 16px 0}
+.pb{flex:1;height:3px;border-radius:2px;background:#222537}
+.pb.on{background:var(--accent,#3b82f6)}
+.sec{padding:16px 16px 0;display:none}.sec.active{display:block}
+.lbl{font-size:11px;font-weight:700;color:#4a5568;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px}
+.inp{width:100%;background:#181b26;border:1.5px solid #222537;border-radius:10px;padding:12px 14px;color:#dde2ec;font-size:15px;outline:none}
+.inp:focus{border-color:var(--accent,#3b82f6)}
+.si{flex:1;min-width:0;background:#0b0d14;border:1.5px solid #222537;border-radius:8px;padding:11px 12px;color:#dde2ec;font-size:16px;outline:none}
+.si:focus{border-color:var(--accent,#3b82f6)}
+textarea.inp{min-height:56px;resize:vertical}
+.btn{padding:13px 20px;border-radius:10px;border:none;font-weight:700;font-size:15px;cursor:pointer;background:var(--accent,#3b82f6);color:#0e1016}
+.btn:disabled{opacity:.4}
+.btg{background:transparent;border:1.5px solid #222537;color:#dde2ec}
+.bblk{width:100%;margin-bottom:8px}
+.sm{padding:8px 13px;font-size:13px}
+.card{background:#181b26;border:1px solid #222537;border-radius:13px;padding:13px 15px;margin-bottom:10px}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.ob{padding:16px 10px;border-radius:12px;border:2px solid #222537;background:#181b26;color:#dde2ec;font-weight:700;font-size:14px;cursor:pointer;text-align:center}
+.ob.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent)}
+.oi{font-size:24px;display:block;margin-bottom:6px}
+.rb{padding:12px 16px;border-radius:11px;margin-bottom:8px;width:100%;border:1.5px solid #222537;background:#181b26;color:#dde2ec;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.rb.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:7px 12px;border-radius:8px;border:1.5px solid #222537;background:transparent;color:#dde2ec;font-size:13px;cursor:pointer}
+.badge{border-radius:6px;padding:2px 9px;font-size:12px;font-weight:700}
+.mic{flex-shrink:0;width:46px;height:46px;border-radius:8px;border:1.5px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,#0b0d14);color:var(--accent);font-size:11px;font-weight:800;cursor:pointer}
+.grp{border:1.5px solid var(--accent);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.grph{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;background:color-mix(in srgb,var(--accent) 8%,#12141c)}
+.grph .t{color:var(--accent);font-weight:800;font-size:15px}
+.grph .s{color:#4a5568;font-size:12px;margin-top:2px}
+.gadd{padding:10px 16px;border-left:1px solid var(--accent);color:var(--accent);font-size:22px;font-weight:700;cursor:pointer;background:transparent;border-top:none;border-right:none;border-bottom:none}
+.pc{border:1.5px solid #222537;border-radius:12px;padding:12px 13px;margin:10px;background:#12141c}
+.pc .h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.pc .num{color:#4a5568;font-weight:700}
+.pc .nm{color:var(--accent);font-weight:700;text-align:right}
+.pc .src{color:#4a5568;font-size:12px;font-style:italic;text-align:right;margin-top:2px}
+.pc .calc{color:#4a5568;font-size:13px;margin-top:6px}
+.resbox{margin-top:10px;background:#0b0d14;border-radius:10px;padding:10px 14px;display:flex;gap:16px}
+.rc{flex:1}.rl{font-size:11px;color:#4a5568;text-transform:uppercase}.rv{font-size:18px;font-weight:900;margin-top:3px}
+.addp{width:calc(100% - 20px);margin:10px;padding:12px;border-radius:12px;border:2px dashed var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:700;font-size:15px;cursor:pointer}
+.sumbox{border:1.5px solid var(--accent);border-radius:12px;padding:13px 15px;margin:10px}
+.sumbox .st{color:var(--accent);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.sumrow{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid #222537;font-size:14px}
+#nav{position:fixed;bottom:0;left:0;right:0;background:#13161f;border-top:1px solid #222537;display:flex;z-index:200}
+.nb{flex:1;padding:9px 4px 11px;border:none;background:transparent;color:#4a5568;cursor:pointer;border-top:2px solid transparent;font-size:10px;font-weight:600}
+.nb.on{border-top-color:var(--accent);color:var(--accent)}
+.ni{font-size:19px;display:block;margin-bottom:2px}
+.aitem{background:#181b26;border:1.5px solid #222537;border-radius:13px;margin-bottom:10px;overflow:hidden}
+.arow{display:flex;align-items:center;gap:12px;padding:14px 15px;cursor:pointer}
+.arow .ai{font-size:26px}.arow .t{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .sub{font-size:12px;color:#4a5568;margin-top:3px}
+.adel{padding:8px 12px;border-radius:8px;border:none;background:#ef444422;color:#ef4444;font-weight:700;font-size:18px;cursor:pointer}
+.empty{text-align:center;padding:40px 20px;color:#4a5568}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:flex-end}
+.ov.open{display:flex}
+.sheet{background:#1a1d2a;border-radius:18px 18px 0 0;padding:18px 16px 30px;width:100%;border-top:2px solid var(--accent);max-height:92vh;overflow:auto}
+.seg{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.sgb{flex:1;min-width:90px;padding:11px;border-radius:10px;border:1.5px solid #222537;background:transparent;color:#dde2ec;font-weight:700;font-size:14px;cursor:pointer;text-align:center}
+.sgb.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent)}
+.frow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.tsel{padding:12px 16px;border-radius:11px;border:1.5px solid #222537;background:#12141c;color:#dde2ec;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:11px}
+.tsel .ck{width:24px;height:24px;border-radius:7px;border:2px solid #222537;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#0e1016}
+.tsel.on{border-color:var(--accent)}.tsel.on .ck{background:var(--accent);border-color:var(--accent)}
+.catbtn{width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:1.5px solid #222537;background:#12141c;color:#dde2ec;font-size:15px;cursor:pointer;margin-bottom:8px;display:flex;justify-content:space-between}
+.catbtn .u{color:#4a5568;font-size:13px}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#1a1d2a;border:1.5px solid #222537;color:#dde2ec;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;z-index:700;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{border-color:#ef4444;color:#fca5a5}
+.foto{width:78px;height:78px;object-fit:cover;border-radius:8px;border:1.5px solid #222537}
+.fwrap{position:relative;display:inline-block;margin:4px 4px 0 0}
+.fdel{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,.7);color:#fff;font-size:12px;cursor:pointer}
+.hint{color:#4a5568;font-size:13px;margin:2px 0 10px}
+</style>
+</head>
+<body>
+<div id="hd">
+  <div><h1 id="ht">📐 AufmaßPro</h1><p id="hs">Meine Aufmaße</p></div>
+  <button class="folder" onclick="goOrdner()">📁</button>
+</div>
+<div id="prog"><div class="pb" id="pb1"></div><div class="pb" id="pb2"></div><div class="pb" id="pb3"></div><div class="pb" id="pb4"></div></div>
+
+<!-- Ordner -->
+<div class="sec" id="s0">
+  <div id="alist"></div>
+  <button class="btn bblk" style="margin-top:8px" onclick="neu()">➕ Neues Aufmaß erstellen</button>
+</div>
+
+<!-- 1 Kunde -->
+<div class="sec" id="s1">
+  <span class="lbl">Kundendaten</span>
+  <input class="inp" id="ik" placeholder="Kundenname" style="margin-bottom:10px" oninput="onKd()"/>
+  <input class="inp" id="ia" placeholder="Adresse / Ort" style="margin-bottom:10px" oninput="onKd()"/>
+  <input class="inp" id="ibvh" placeholder="Bauvorhaben / Objekt (optional)" style="margin-bottom:10px" oninput="onKd()"/>
+  <div class="frow"><input class="inp" id="itel" inputmode="tel" placeholder="Telefon (optional)" oninput="onKd()"/><input class="inp" id="ietage" placeholder="Etage (optional)" oninput="onKd()"/></div>
+  <button class="btn btg bblk" style="margin-top:10px" onclick="voiceKunde()">🎤 Per Sprache erfassen</button>
+  <p class="hint">Am Stück sprechen, z.B.: <b>„Name Müller, Adresse Hauptstraße 2 Koblenz, Objekt Wohnung Sanierung“</b>. Schlüsselwörter: <b>Name</b>, <b>Adresse</b>, <b>Objekt</b>, <b>Telefon</b>, <b>Etage</b> steuern, wohin der Text kommt.</p>
+  <span class="lbl">Objekttyp</span>
+  <div class="og" id="og"></div>
+  <button class="btn bblk" id="b1" disabled onclick="go(2)">Weiter → Räume</button>
+</div>
+
+<!-- 2 Räume -->
+<div class="sec" id="s2">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span class="lbl" id="s2l" style="margin:0">Räume</span>
+    <button class="btn btg sm" onclick="go(4)">Σ Gesamtauswertung</button>
+  </div>
+  <div id="rlist"></div>
+  <span class="lbl" style="margin-top:16px">Vorlage</span>
+  <div class="chips" id="rchips"></div>
+  <span class="lbl">Eigener Raum</span>
+  <div class="frow">
+    <input class="inp" id="ir" placeholder="z.B. Hobbyraum" onkeydown="if(event.key==='Enter')addRaumC()"/>
+    <button class="mic" onclick="voice(v=>{document.getElementById('ir').value=v},'text')">MIC</button>
+    <button class="btn" style="white-space:nowrap" onclick="addRaumC()">+ Add</button>
+  </div>
+  <button class="btn btg bblk" style="margin-top:12px" onclick="go(1)">← Zurück</button>
+</div>
+
+<!-- 3 Positionen -->
+<div class="sec" id="s3">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+    <div><span class="lbl" id="s3g">Trockenbau</span><h2 id="s3r" style="font-size:20px;font-weight:800;margin:0"></h2></div>
+    <button class="btn sm" onclick="go(2)">← Räume</button>
+  </div>
+  <button class="btn bblk" onclick="openWaehlen()">+ Position wählen</button>
+  <button class="btn btg bblk" onclick="uebernahmeStart()">↳ Werte aus anderem Gewerk übernehmen</button>
+  <div id="plist"></div>
+  <div class="card">
+    <span class="lbl">Notiz</span>
+    <div class="frow"><textarea class="inp" id="rnotiz" placeholder="Besonderheiten..." onblur="saveNotiz()"></textarea>
+    <button class="mic" onclick="voice(v=>{document.getElementById('rnotiz').value=v;saveNotiz()},'text')">MIC</button></div>
+  </div>
+  <div class="card">
+    <span class="lbl">📷 Fotos</span>
+    <div class="frow"><button class="btn btg" style="flex:1" onclick="document.getElementById('fin').click()">📷 Foto hinzufügen</button></div>
+    <div id="fgrid"></div>
+    <input type="file" id="fin" accept="image/*" capture="environment" multiple style="display:none" onchange="fotoAdd(event)"/>
+  </div>
+</div>
+
+<!-- 4 Auswertung -->
+<div class="sec" id="s4">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span class="lbl" style="margin:0">Σ Gesamtauswertung</span>
+    <button class="btn btg sm" onclick="go(2)">← Räume</button>
+  </div>
+  <div id="sumhead" class="card"></div>
+  <div id="sumbody"></div>
+  <button class="btn bblk" style="background:#10b981;color:#fff;margin-top:8px" onclick="exportPDF()">📄 Als PDF exportieren</button>
+  <button class="btn btg bblk" onclick="neu()">🔄 Neues Aufmaß</button>
+</div>
+
+<div id="nav"></div>
+<div id="toast"></div>
+
+<!-- Sheet: Position wählen -->
+<div class="ov" id="ovWaehlen" onclick="if(event.target===this)close_('ovWaehlen')">
+  <div class="sheet">
+    <p style="font-weight:800;font-size:18px;color:var(--accent);margin-bottom:6px">+ Position wählen</p>
+    <p class="hint">Lange auf eine eigene Vorlage tippen zum Umbenennen/Löschen.</p>
+    <div id="catlist"></div>
+    <button class="btn bblk" style="margin-top:8px" onclick="close_('ovWaehlen');openEdit(null)">✎ Eigene Position anlegen</button>
+    <button class="btn btg bblk" onclick="close_('ovWaehlen')">Schließen</button>
+  </div>
+</div>
+
+<!-- Sheet: Position bearbeiten -->
+<div class="ov" id="ovEdit" onclick="if(event.target===this)close_('ovEdit')">
+  <div class="sheet">
+    <p style="font-weight:800;font-size:18px;color:var(--accent);margin-bottom:14px" id="editTitle">Position bearbeiten</p>
+    <span class="lbl">Beschreibung</span>
+    <input class="inp" id="eLabel" placeholder="z.B. Wandfläche"/>
+    <button class="btn btg bblk" style="margin-top:10px" onclick="voicePos()">🎤 Per Sprache erfassen</button>
+    <p class="hint">Am Stück sprechen, z.B.: <b>„Beschreibung Wandfläche, Länge 3,58, Breite 2,50, Anzahl 2, Einheit Quadratmeter“</b>. Schlüsselwörter: Beschreibung, Länge, Breite, Höhe, Wert, Anzahl, Abzug, Einheit.</p>
+    <span class="lbl" style="margin-top:6px">Berechnung</span>
+    <div class="seg" id="eCalc"></div>
+    <div id="eFields"></div>
+    <div class="frow" style="margin-top:4px">
+      <div style="flex:1"><span class="lbl">Anzahl</span><input class="si" id="eAnz" inputmode="decimal" value="1"/></div>
+      <div style="flex:1"><span class="lbl">Abzug (m²)</span><input class="si" id="eAbzug" inputmode="decimal" value="0"/></div>
+    </div>
+    <span class="lbl" style="margin-top:10px">Einheit (frei)</span>
+    <input class="inp" id="eEinheit" placeholder="m²"/>
+    <div class="chips" id="eUnits" style="margin-top:8px"></div>
+    <label style="display:flex;align-items:center;gap:10px;margin:6px 0 14px;cursor:pointer">
+      <input type="checkbox" id="eIsAbzug" style="width:22px;height:22px"/>
+      <span>Abzugsposition (wird vom Gesamt subtrahiert)</span>
+    </label>
+    <span class="lbl">📷 Fotos zu dieser Position</span>
+    <button class="btn btg bblk" onclick="document.getElementById('posfin').click()">📷 Foto hinzufügen</button>
+    <div id="posfgrid"></div>
+    <input type="file" id="posfin" accept="image/*" capture="environment" multiple style="display:none" onchange="posFotoAdd(event)"/>
+    <div class="resbox"><div class="rc"><div class="rl">Ergebnis</div><div class="rv" id="eRes" style="color:var(--accent)">0,00</div></div>
+    <div class="rc"><div class="rl">Umfang</div><div class="rv" id="eUmf">–</div></div></div>
+    <div class="frow" style="margin-top:14px">
+      <button class="btn btg" style="flex:1" onclick="close_('ovEdit')">Abbrechen</button>
+      <button class="btn" style="flex:2" onclick="saveEdit()">Speichern</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer" id="asTplWrap">
+      <input type="checkbox" id="eAsTpl" checked style="width:22px;height:22px"/>
+      <span style="font-size:13px;color:#4a5568">Als Vorlage speichern (nur in diesem Gewerk)</span>
+    </label>
+  </div>
+</div>
+
+<!-- Sheet: Übernahme Seiten -->
+<div class="ov" id="ovSeiten"><div class="sheet">
+  <p style="font-weight:800;font-size:18px;color:var(--accent)" id="seitenTitle">Ständerwerk</p>
+  <p class="hint" id="seitenHint">Ständerwerk hat zwei Seiten. Welche sollen übernommen werden?</p>
+  <div class="frow">
+    <button class="btn btg" style="flex:1" onclick="seitenPick(1)">1 Seite</button>
+    <button class="btn" style="flex:1" onclick="seitenPick(2)">2 Seiten</button>
+    <button class="btn btg" style="flex:1" onclick="close_('ovSeiten')">Überspringen</button>
+  </div>
+</div></div>
+
+<!-- Sheet: Übernahme Ziel -->
+<div class="ov" id="ovZiel"><div class="sheet">
+  <p style="font-weight:800;font-size:18px;color:var(--accent)">Was soll gemacht werden?</p>
+  <p class="hint" id="zielHint"></p>
+  <div id="zielList"></div>
+  <div class="frow" style="margin-top:8px">
+    <button class="btn btg" style="flex:1" onclick="close_('ovZiel')">Abbrechen</button>
+    <button class="btn" style="flex:2" onclick="zielApply()">Übernehmen</button>
+  </div>
+</div></div>
+
+<script>
+"use strict";
+// ---- Service Worker ----
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+
+// ---- Stammdaten ----
+const GEWERKE=[
+  {id:'trockenbau',label:'Trockenbau',icon:'🧱',color:'#3b82f6'},
+  {id:'maler',label:'Malerarbeiten',icon:'🖌️',color:'#a855f7'},
+  {id:'fliesen',label:'Fliesenarbeiten',icon:'⬜',color:'#06b6d4'},
+  {id:'boden',label:'Bodenbelag',icon:'🪵',color:'#f59e0b'},
+];
+const OBJ=[{id:'wohnung',l:'Wohnung',i:'🏢'},{id:'haus',l:'Haus',i:'🏠'},{id:'buero',l:'Büro',i:'💼'},{id:'gewerbe',l:'Gewerbe',i:'🏭'}];
+const RVOR={
+  wohnung:['Wohnzimmer','Schlafzimmer','Kinderzimmer','Küche','Bad','WC','Flur','Abstellraum','Balkon'],
+  haus:['Wohnzimmer','Schlafzimmer','Kinderzimmer','Küche','Bad','WC','Flur','Keller','Dachboden','Garage','Terrasse'],
+  buero:['Büroraum','Besprechungsraum','Empfang','Flur','Teeküche','WC'],
+  gewerbe:['Verkaufsfläche','Lager','Büro','Sanitärraum','Flur','Eingangsbereich'],
+};
+const UNITS=['m²','lfm','Stk.','m³','m','Psch.'];
+const CALC=[{id:'flaeche',l:'Länge × Breite',f:['laenge','breite'],lab:['Länge (m)','Breite (m)']},
+  {id:'laengehoehe',l:'Länge × Höhe',f:['laenge','hoehe'],lab:['Länge (m)','Höhe (m)']},
+  {id:'direkt',l:'Direkteingabe',f:['wert'],lab:['Wert']}];
+// Standard-Positionskatalog (Voreinstellungen; Einheit frei änderbar)
+const STD={
+  trockenbau:[
+    // Baustelle / Schutz
+    {id:'t_baustelle',label:'Arbeitsbereich einrichten',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'t_schutz',label:'Angrenzende Bauteile schützen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'t_staub',label:'Staubschutz herstellen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'t_material',label:'Materialtransport und Einlagerung',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    // Abbruch / Rückbau
+    {id:'t_ab_gkw',label:'Gipskartonwände zurückbauen',calc:'laengehoehe',einheit:'m²',grp:'Abbruch/Rückbau'},
+    {id:'t_ab_vorsatz',label:'Vorsatzschalen entfernen',calc:'laengehoehe',einheit:'m²',grp:'Abbruch/Rückbau'},
+    {id:'t_ab_decke',label:'Unterdecken zurückbauen',calc:'flaeche',einheit:'m²',grp:'Abbruch/Rückbau'},
+    {id:'t_ab_daemm',label:'Dämmung ausbauen',calc:'flaeche',einheit:'m²',grp:'Abbruch/Rückbau'},
+    {id:'t_ab_uk',label:'Metall-/Holz-UK demontieren',calc:'laengehoehe',einheit:'m²',grp:'Abbruch/Rückbau'},
+    {id:'t_ab_ent',label:'Entsorgung GKB/Dämmung/Profile',calc:'direkt',einheit:'Psch.',grp:'Abbruch/Rückbau'},
+    // Metallständerwände
+    {id:'t_mw_uk',label:'CW/UW-Unterkonstruktion herstellen',calc:'laengehoehe',einheit:'m²',grp:'Metallständerwände'},
+    {id:'t_mw_einfach1',label:'Metallständerwand einlagig beplankt',calc:'laengehoehe',einheit:'m²',staender:true,grp:'Metallständerwände'},
+    {id:'t_mw_einfach2',label:'Metallständerwand zweilagig beplankt',calc:'laengehoehe',einheit:'m²',staender:true,grp:'Metallständerwände'},
+    {id:'t_mw_einseitig',label:'Metallständerwand einseitig beplankt',calc:'laengehoehe',einheit:'m²',grp:'Metallständerwände'},
+    {id:'t_mw_gkbi',label:'Beplankung GKBI (imprägniert)',calc:'laengehoehe',einheit:'m²',grp:'Metallständerwände'},
+    {id:'t_mw_feuer',label:'Beplankung Feuerschutzplatten',calc:'laengehoehe',einheit:'m²',grp:'Metallständerwände'},
+    // Holzständerwände
+    {id:'t_hw_uk',label:'Holzunterkonstruktion',calc:'laengehoehe',einheit:'m²',grp:'Holzständerwände'},
+    {id:'t_hw_daemm',label:'Dämmung Holzständerwand',calc:'laengehoehe',einheit:'m²',grp:'Holzständerwände'},
+    {id:'t_hw_beplank',label:'Holzständerwand beplanken (ein-/mehrlagig)',calc:'laengehoehe',einheit:'m²',staender:true,grp:'Holzständerwände'},
+    // Vorsatzschalen
+    {id:'t_vs_frei',label:'Freistehende Vorsatzschale',calc:'laengehoehe',einheit:'m²',grp:'Vorsatzschalen'},
+    {id:'t_vs_direkt',label:'Direkt befestigte Vorsatzschale',calc:'laengehoehe',einheit:'m²',grp:'Vorsatzschalen'},
+    {id:'t_vs_install',label:'Installationsvorsatzschale',calc:'laengehoehe',einheit:'m²',grp:'Vorsatzschalen'},
+    {id:'t_vs_daemm',label:'Vorsatzschale mit Dämmung',calc:'laengehoehe',einheit:'m²',grp:'Vorsatzschalen'},
+    // Trockenputz
+    {id:'t_tp_kleben',label:'Gipskartonplatten auf Mauerwerk kleben',calc:'laengehoehe',einheit:'m²',grp:'Trockenputz'},
+    {id:'t_tp_vor',label:'Untergrund vorbereiten (Trockenputz)',calc:'laengehoehe',einheit:'m²',grp:'Trockenputz'},
+    {id:'t_tp_binder',label:'Ansetzbinder',calc:'laengehoehe',einheit:'m²',grp:'Trockenputz'},
+    // Unterdecken
+    {id:'t_ud_abgeh',label:'Abgehängte Gipskartondecke',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_direkt',label:'Direktabhänger',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_nonius',label:'Noniusabhänger',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_kreuz',label:'Kreuzlattung / CD-UD-Konstruktion',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_1lagig',label:'Decke einlagig beplankt',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_2lagig',label:'Decke zweilagig beplankt',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    {id:'t_ud_spezial',label:'Feuchte-/Brandschutzdecke',calc:'flaeche',einheit:'m²',grp:'Unterdecken'},
+    // Dachschrägen
+    {id:'t_ds_uk',label:'Unterkonstruktion ausrichten (Dachschräge)',calc:'flaeche',einheit:'m²',grp:'Dachschrägen'},
+    {id:'t_ds_beplank',label:'Dachschrägen beplanken',calc:'flaeche',einheit:'m²',grp:'Dachschrägen'},
+    {id:'t_ds_drempel',label:'Drempel / Abseiten',calc:'laengehoehe',einheit:'m²',grp:'Dachschrägen'},
+    {id:'t_ds_anschluss',label:'Anschlüsse an Pfetten/Sparren',calc:'direkt',einheit:'lfm',grp:'Dachschrägen'},
+    {id:'t_ds_sparren',label:'Aufdopplung der Dachsparren',calc:'direkt',einheit:'lfm',grp:'Dachschrägen'},
+    // Dämmung
+    {id:'t_dm_trenn',label:'Mineralwolle in Trennwänden',calc:'laengehoehe',einheit:'m²',grp:'Dämmung'},
+    {id:'t_dm_schall',label:'Schallschutzdämmung',calc:'laengehoehe',einheit:'m²',grp:'Dämmung'},
+    {id:'t_dm_waerme',label:'Wärmedämmung',calc:'laengehoehe',einheit:'m²',grp:'Dämmung'},
+    {id:'t_dm_decke',label:'Dämmung in Decken',calc:'flaeche',einheit:'m²',grp:'Dämmung'},
+    {id:'t_dm_dach',label:'Dämmung in Dachschrägen',calc:'flaeche',einheit:'m²',grp:'Dämmung'},
+    // Dampfbremse / Luftdichtheit
+    {id:'t_db_verlegen',label:'Dampfbremse verlegen',calc:'flaeche',einheit:'m²',grp:'Dampfbremse'},
+    {id:'t_db_stoss',label:'Stöße verkleben',calc:'direkt',einheit:'lfm',grp:'Dampfbremse'},
+    {id:'t_db_anschluss',label:'Anschlüsse luftdicht herstellen',calc:'direkt',einheit:'lfm',grp:'Dampfbremse'},
+    {id:'t_db_durch',label:'Durchdringungen abdichten',calc:'direkt',einheit:'Stk.',grp:'Dampfbremse'},
+    // Spachteln
+    {id:'t_sp_q1',label:'Spachteln Q1',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'t_sp_q2',label:'Spachteln Q2',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'t_sp_q3',label:'Spachteln Q3',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'t_sp_q4',label:'Spachteln Q4',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'t_sp_schraub',label:'Schraubköpfe spachteln',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'t_sp_deck',label:'Fugendeckstreifen einarbeiten',calc:'direkt',einheit:'lfm',grp:'Spachteln'},
+    {id:'t_sp_schleif',label:'Schleifarbeiten',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    // Kantenschutz
+    {id:'t_ks_eck',label:'Eckschutzschienen',calc:'direkt',einheit:'lfm',grp:'Kantenschutz'},
+    {id:'t_ks_papier',label:'Papier-/Metallkanten',calc:'direkt',einheit:'lfm',grp:'Kantenschutz'},
+    {id:'t_ks_flex',label:'Flexible Eckprofile',calc:'direkt',einheit:'lfm',grp:'Kantenschutz'},
+    {id:'t_ks_laib',label:'Kantenschutz an Laibungen',calc:'direkt',einheit:'lfm',grp:'Kantenschutz'},
+    // Türöffnungen
+    {id:'t_to_herstellen',label:'Türöffnung herstellen',calc:'direkt',einheit:'Stk.',grp:'Türöffnungen'},
+    {id:'t_to_ua',label:'UA-Profile',calc:'direkt',einheit:'Stk.',grp:'Türöffnungen'},
+    {id:'t_to_sturz',label:'Türsturz',calc:'direkt',einheit:'Stk.',grp:'Türöffnungen'},
+    {id:'t_to_verstaerk',label:'Verstärkung für Türzargen',calc:'direkt',einheit:'Stk.',grp:'Türöffnungen'},
+    {id:'t_to_schiebe',label:'Schiebetürsystem vorbereiten',calc:'direkt',einheit:'Stk.',grp:'Türöffnungen'},
+    // Öffnungen / Ausschnitte
+    {id:'t_oe_lampe',label:'Lampenausschnitte',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    {id:'t_oe_revision',label:'Revisionsöffnungen',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    {id:'t_oe_lueftung',label:'Lüftungsöffnungen',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    {id:'t_oe_steck',label:'Steckdosenöffnungen',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    {id:'t_oe_rohr',label:'Rohrdurchführungen',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    {id:'t_oe_decke',label:'Deckenausschnitte',calc:'direkt',einheit:'Stk.',grp:'Öffnungen/Ausschnitte'},
+    // Revisionsklappen
+    {id:'t_rk_gkb',label:'Revisionsklappe GKB',calc:'direkt',einheit:'Stk.',grp:'Revisionsklappen'},
+    {id:'t_rk_brand',label:'Brandschutz-Revisionsklappe',calc:'direkt',einheit:'Stk.',grp:'Revisionsklappen'},
+    {id:'t_rk_luft',label:'Luftdichte Revisionsklappe',calc:'direkt',einheit:'Stk.',grp:'Revisionsklappen'},
+    {id:'t_rk_sonder',label:'Revisionsklappe Sondergröße',calc:'direkt',einheit:'Stk.',grp:'Revisionsklappen'},
+    // Nischen / Verkofferung
+    {id:'t_ni_rohr',label:'Rohrverkofferungen',calc:'direkt',einheit:'lfm',grp:'Nischen/Verkofferung'},
+    {id:'t_ni_schacht',label:'Installationsschächte',calc:'laengehoehe',einheit:'m²',grp:'Nischen/Verkofferung'},
+    {id:'t_ni_stuetze',label:'Stützen verkleiden',calc:'laengehoehe',einheit:'m²',grp:'Nischen/Verkofferung'},
+    {id:'t_ni_traeger',label:'Träger verkleiden',calc:'direkt',einheit:'lfm',grp:'Nischen/Verkofferung'},
+    {id:'t_ni_nische',label:'Wandnischen',calc:'direkt',einheit:'Stk.',grp:'Nischen/Verkofferung'},
+    {id:'t_ni_vorwand',label:'Vorwandkästen',calc:'direkt',einheit:'Stk.',grp:'Nischen/Verkofferung'},
+    // Lichtvouten
+    {id:'t_lv_vouten',label:'Lichtvouten herstellen',calc:'direkt',einheit:'lfm',grp:'Lichtvouten'},
+    {id:'t_lv_schatten',label:'Schattenfugen',calc:'direkt',einheit:'lfm',grp:'Lichtvouten'},
+    {id:'t_lv_led',label:'LED-Aufnahmen',calc:'direkt',einheit:'lfm',grp:'Lichtvouten'},
+    {id:'t_lv_abgesetzt',label:'Abgesetzte Deckenflächen',calc:'flaeche',einheit:'m²',grp:'Lichtvouten'},
+    {id:'t_lv_mehrstufig',label:'Mehrstufige Decken',calc:'flaeche',einheit:'m²',grp:'Lichtvouten'},
+    // Brandschutz
+    {id:'t_bs_wand',label:'Brandschutzwand',calc:'laengehoehe',einheit:'m²',staender:true,grp:'Brandschutz'},
+    {id:'t_bs_decke',label:'Brandschutzdecke',calc:'flaeche',einheit:'m²',grp:'Brandschutz'},
+    {id:'t_bs_schacht',label:'Schachtwand',calc:'laengehoehe',einheit:'m²',grp:'Brandschutz'},
+    {id:'t_bs_bekleid',label:'Stützen-/Trägerbekleidung',calc:'direkt',einheit:'lfm',grp:'Brandschutz'},
+    {id:'t_bs_system',label:'Zugelassenes Brandschutzsystem',calc:'laengehoehe',einheit:'m²',grp:'Brandschutz'},
+    // Schallschutz
+    {id:'t_ss_daemm',label:'Erhöhte Dämmstoffstärke',calc:'laengehoehe',einheit:'m²',grp:'Schallschutz'},
+    {id:'t_ss_mehrlagig',label:'Mehrlagige Beplankung',calc:'laengehoehe',einheit:'m²',grp:'Schallschutz'},
+    {id:'t_ss_entkoppelt',label:'Entkoppelte Konstruktion',calc:'laengehoehe',einheit:'m²',grp:'Schallschutz'},
+    {id:'t_ss_dicht',label:'Dichtungsband / Anschlussdichtung',calc:'direkt',einheit:'lfm',grp:'Schallschutz'},
+    // Feuchtraum
+    {id:'t_fr_impraeg',label:'Imprägnierte Gipskartonplatten',calc:'laengehoehe',einheit:'m²',grp:'Feuchtraum'},
+    {id:'t_fr_zement',label:'Zementgebundene Platten',calc:'laengehoehe',einheit:'m²',grp:'Feuchtraum'},
+    {id:'t_fr_uk',label:'Verstärkte Unterkonstruktion',calc:'laengehoehe',einheit:'m²',grp:'Feuchtraum'},
+    {id:'t_fr_decke',label:'Feuchtraumdecke',calc:'flaeche',einheit:'m²',grp:'Feuchtraum'},
+    // Akustik
+    {id:'t_ak_loch',label:'Lochplatten',calc:'flaeche',einheit:'m²',grp:'Akustik'},
+    {id:'t_ak_platte',label:'Akustikplatten',calc:'flaeche',einheit:'m²',grp:'Akustik'},
+    {id:'t_ak_daemm',label:'Dämmauflagen (Akustik)',calc:'flaeche',einheit:'m²',grp:'Akustik'},
+    {id:'t_ak_uk',label:'Unterkonstruktion (Akustik)',calc:'flaeche',einheit:'m²',grp:'Akustik'},
+    // Anschlüsse / Fugen
+    {id:'t_an_kitt',label:'Trennwandkitt / Dichtungsband',calc:'direkt',einheit:'lfm',grp:'Anschlüsse/Fugen'},
+    {id:'t_an_anschluss',label:'Anschlussfugen',calc:'direkt',einheit:'lfm',grp:'Anschlüsse/Fugen'},
+    {id:'t_an_beweg',label:'Bewegungsfugen',calc:'direkt',einheit:'lfm',grp:'Anschlüsse/Fugen'},
+    {id:'t_an_schatten',label:'Schattenfugen',calc:'direkt',einheit:'lfm',grp:'Anschlüsse/Fugen'},
+    {id:'t_an_acryl',label:'Acrylanschlüsse',calc:'direkt',einheit:'lfm',grp:'Anschlüsse/Fugen'},
+    // Abzug
+    {id:'t_abzug',label:'Abzug Türen/Fenster',calc:'flaeche',einheit:'m²',abzug:true,grp:'Abzug'},
+  ],
+  maler:[
+    // Baustelleneinrichtung / Abdeckarbeiten
+    {id:'m_baustelle',label:'Baustelleneinrichtung',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Abdecken'},
+    {id:'m_bodenabdeck',label:'Böden abdecken',calc:'flaeche',einheit:'m²',grp:'Baustelle/Abdecken'},
+    {id:'m_abkleben',label:'Fenster/Türen/Möbel abkleben',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Abdecken'},
+    {id:'m_folie',label:'Schutzfolie / Malervlies auslegen',calc:'flaeche',einheit:'m²',grp:'Baustelle/Abdecken'},
+    {id:'m_schutz',label:'Vorhandene Bauteile schützen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Abdecken'},
+    // Untergrund vorbereiten
+    {id:'m_reinigen',label:'Wände/Decken reinigen',calc:'laengehoehe',einheit:'m²',grp:'Untergrund'},
+    {id:'m_altanstrich',label:'Lose Altanstriche entfernen',calc:'laengehoehe',einheit:'m²',grp:'Untergrund'},
+    {id:'m_schleifen',label:'Schleifen',calc:'laengehoehe',einheit:'m²',grp:'Untergrund'},
+    {id:'m_grundieren',label:'Grundieren / Tiefengrund',calc:'laengehoehe',einheit:'m²',grp:'Untergrund'},
+    {id:'m_isolieren',label:'Nikotin-/Wasser-/Rußflecken isolieren',calc:'laengehoehe',einheit:'m²',grp:'Untergrund'},
+    // Spachtelarbeiten
+    {id:'m_risse',label:'Löcher und Risse schließen',calc:'direkt',einheit:'Psch.',grp:'Spachteln'},
+    {id:'m_spachtelteil',label:'Teilflächen spachteln',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'m_spachtelvoll',label:'Vollflächig spachteln',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'m_q2',label:'Spachtelqualität Q2',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'m_q3',label:'Spachtelqualität Q3',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'m_q4',label:'Spachtelqualität Q4',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    {id:'m_spachtelschleif',label:'Spachtelflächen schleifen',calc:'laengehoehe',einheit:'m²',grp:'Spachteln'},
+    // Wandflächen streichen
+    {id:'m_wgrund',label:'Grundanstrich Wand',calc:'laengehoehe',einheit:'m²',grp:'Wand'},
+    {id:'m_wzwischen',label:'Zwischenanstrich Wand',calc:'laengehoehe',einheit:'m²',grp:'Wand'},
+    {id:'m_wschluss',label:'Schlussanstrich Wand',calc:'laengehoehe',einheit:'m²',grp:'Wand'},
+    {id:'m_w1x',label:'Wand 1× streichen',calc:'laengehoehe',einheit:'m²',grp:'Wand'},
+    {id:'m_w2x',label:'Wand 2× streichen',calc:'laengehoehe',einheit:'m²',grp:'Wand'},
+    // Deckenflächen streichen
+    {id:'m_dgrund',label:'Grundanstrich Decke',calc:'flaeche',einheit:'m²',grp:'Decke'},
+    {id:'m_d1x',label:'Decke 1× streichen',calc:'flaeche',einheit:'m²',grp:'Decke'},
+    {id:'m_d2x',label:'Decke 2× streichen',calc:'flaeche',einheit:'m²',grp:'Decke'},
+    {id:'m_dschluss',label:'Schlussanstrich Decke',calc:'flaeche',einheit:'m²',grp:'Decke'},
+    // Gipskarton
+    {id:'m_gkbgrund',label:'Grundierung neuer GKB-Flächen',calc:'laengehoehe',einheit:'m²',grp:'Gipskarton'},
+    {id:'m_gkbschleif',label:'Spachtelstellen nachschleifen',calc:'direkt',einheit:'Stk.',grp:'Gipskarton'},
+    {id:'m_gkbvlies',label:'Malervlies kleben (GKB)',calc:'laengehoehe',einheit:'m²',grp:'Gipskarton'},
+    {id:'m_gkb2x',label:'GKB 2-facher Anstrich',calc:'laengehoehe',einheit:'m²',grp:'Gipskarton'},
+    // Laibungen
+    {id:'m_fensterlaib',label:'Fensterlaibungen',calc:'direkt',einheit:'lfm',grp:'Laibungen'},
+    {id:'m_tuerlaib',label:'Türlaibungen',calc:'direkt',einheit:'lfm',grp:'Laibungen'},
+    {id:'m_sturz',label:'Stürze',calc:'direkt',einheit:'lfm',grp:'Laibungen'},
+    {id:'m_pfeiler',label:'Pfeiler',calc:'direkt',einheit:'lfm',grp:'Laibungen'},
+    {id:'m_nische',label:'Nischen',calc:'direkt',einheit:'Stk.',grp:'Laibungen'},
+    // Ausschnitte / Erschwernisse
+    {id:'m_lampe',label:'Lampenausschnitte bearbeiten',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'m_steckdose',label:'Steckdosen / Schalter',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'m_lueftung',label:'Lüftungsgitter',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'m_rohrdurch',label:'Rohrdurchführungen',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'m_kanten',label:'Viele Kanten / kleine Teilflächen (Zulage)',calc:'direkt',einheit:'Psch.',grp:'Ausschnitte'},
+    {id:'m_anlagen',label:'Arbeiten um montierte Anlagen (Zulage)',calc:'direkt',einheit:'Psch.',grp:'Ausschnitte'},
+    // Fugen
+    {id:'m_fugewd',label:'Anschlussfuge Wand/Decke',calc:'direkt',einheit:'lfm',grp:'Fugen'},
+    {id:'m_fugezarge',label:'Fuge an Türzargen',calc:'direkt',einheit:'lfm',grp:'Fugen'},
+    {id:'m_fugefenster',label:'Fensteranschlüsse',calc:'direkt',einheit:'lfm',grp:'Fugen'},
+    {id:'m_fugetb',label:'Trockenbauanschlüsse',calc:'direkt',einheit:'lfm',grp:'Fugen'},
+    {id:'m_fugeerneu',label:'Vorhandene Fugen erneuern',calc:'direkt',einheit:'lfm',grp:'Fugen'},
+    // Lack
+    {id:'m_tuerlack',label:'Türen lackieren',calc:'direkt',einheit:'Stk.',grp:'Lack'},
+    {id:'m_zargelack',label:'Zargen lackieren',calc:'direkt',einheit:'Stk.',grp:'Lack'},
+    {id:'m_heizlack',label:'Heizkörper lackieren',calc:'direkt',einheit:'Stk.',grp:'Lack'},
+    {id:'m_rohrlack',label:'Rohre lackieren',calc:'direkt',einheit:'lfm',grp:'Lack'},
+    {id:'m_gelaender',label:'Geländer lackieren',calc:'direkt',einheit:'lfm',grp:'Lack'},
+    {id:'m_metall',label:'Metallteile lackieren',calc:'direkt',einheit:'Stk.',grp:'Lack'},
+    {id:'m_holz',label:'Holzbauteile lackieren',calc:'laengehoehe',einheit:'m²',grp:'Lack'},
+    // Tapeten
+    {id:'m_tapeteab',label:'Alte Tapete entfernen',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    {id:'m_tapetevor',label:'Untergrund vorbereiten (nach Tapete)',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    {id:'m_vlies',label:'Malervlies kleben',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    {id:'m_rauhfaser',label:'Rauhfaser kleben',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    {id:'m_mustertapete',label:'Muster-/Vliestapete kleben',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    {id:'m_tapetestreich',label:'Tapete anschließend streichen',calc:'laengehoehe',einheit:'m²',grp:'Tapeten'},
+    // Sockel / Sonderflächen
+    {id:'m_sockel',label:'Sockelstreifen',calc:'direkt',einheit:'lfm',grp:'Sockel/Sonder'},
+    {id:'m_abgesetzt',label:'Farblich abgesetzte Flächen',calc:'laengehoehe',einheit:'m²',grp:'Sockel/Sonder'},
+    {id:'m_akzent',label:'Akzentwand',calc:'laengehoehe',einheit:'m²',grp:'Sockel/Sonder'},
+    {id:'m_sonderbesch',label:'Sonderbeschichtung Küche/Bad/Gewerbe',calc:'laengehoehe',einheit:'m²',grp:'Sockel/Sonder'},
+    // Nacharbeiten
+    {id:'m_klebeab',label:'Abdeckungen/Klebebänder entfernen',calc:'direkt',einheit:'Psch.',grp:'Nacharbeiten'},
+    {id:'m_spritzer',label:'Farbspritzer beseitigen',calc:'direkt',einheit:'Psch.',grp:'Nacharbeiten'},
+    {id:'m_besenrein',label:'Baustelle besenrein übergeben',calc:'direkt',einheit:'Psch.',grp:'Nacharbeiten'},
+    {id:'m_entsorgung',label:'Entsorgung Abdeckmaterial/Farbreste',calc:'direkt',einheit:'Psch.',grp:'Nacharbeiten'},
+  ],
+  fliesen:[
+    // Baustelle / Schutz
+    {id:'f_baustelle',label:'Baustelleneinrichtung',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'f_schutz',label:'Angrenzende Flächen schützen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'f_laufweg',label:'Laufwege abdecken',calc:'flaeche',einheit:'m²',grp:'Baustelle/Schutz'},
+    {id:'f_staub',label:'Staubschutz herstellen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'f_material',label:'Material anliefern und lagern',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    // Altbelag entfernen
+    {id:'f_bodenab',label:'Bodenfliesen aufnehmen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'f_wandab',label:'Wandfliesen abschlagen',calc:'laengehoehe',einheit:'m²',grp:'Altbelag'},
+    {id:'f_sockelab',label:'Sockelfliesen entfernen',calc:'direkt',einheit:'lfm',grp:'Altbelag'},
+    {id:'f_kleberab',label:'Kleberreste entfernen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'f_silikonab',label:'Alte Silikonfugen entfernen',calc:'direkt',einheit:'lfm',grp:'Altbelag'},
+    // Entsorgung
+    {id:'f_ent_schutt',label:'Entsorgung Fliesen/Bauschutt',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    {id:'f_ent_kleber',label:'Entsorgung Kleber-/Spachtelreste',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    {id:'f_ent_verp',label:'Entsorgung Verpackung/Restmaterial',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    // Untergrund prüfen
+    {id:'f_pr_eben',label:'Ebenheit prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'f_pr_trag',label:'Tragfähigkeit prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'f_pr_feuchte',label:'Feuchtigkeit prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'f_pr_risse',label:'Risse/Schadstellen beurteilen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    // Untergrund vorbereiten
+    {id:'f_vor_reinigen',label:'Reinigen / absaugen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'f_vor_schleifen',label:'Schleifen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'f_vor_fraesen',label:'Fräsen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'f_vor_grund',label:'Grundieren',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'f_vor_haft',label:'Haftbrücke herstellen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    // Spachtel / Ausgleich
+    {id:'f_sp_fehl',label:'Fehlstellen ausbessern',calc:'direkt',einheit:'Psch.',grp:'Spachtel/Ausgleich'},
+    {id:'f_sp_wand',label:'Wandflächen spachteln',calc:'laengehoehe',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'f_sp_boden',label:'Bodenflächen nivellieren',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'f_sp_gefaelle',label:'Gefälle herstellen',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'f_sp_uneben',label:'Unebenheiten ausgleichen',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    // Abdichtung
+    {id:'f_ab_wand',label:'Verbundabdichtung Wand',calc:'laengehoehe',einheit:'m²',grp:'Abdichtung'},
+    {id:'f_ab_boden',label:'Verbundabdichtung Boden',calc:'flaeche',einheit:'m²',grp:'Abdichtung'},
+    {id:'f_ab_dichtband',label:'Dichtbänder',calc:'direkt',einheit:'lfm',grp:'Abdichtung'},
+    {id:'f_ab_ecken',label:'Innen-/Außenecken (Dichtung)',calc:'direkt',einheit:'Stk.',grp:'Abdichtung'},
+    {id:'f_ab_manschette',label:'Rohrmanschetten',calc:'direkt',einheit:'Stk.',grp:'Abdichtung'},
+    {id:'f_ab_ablauf',label:'Bodenabläufe abdichten',calc:'direkt',einheit:'Stk.',grp:'Abdichtung'},
+    {id:'f_ab_dusche',label:'Dusche/Nassbereich komplett abdichten',calc:'direkt',einheit:'Psch.',grp:'Abdichtung'},
+    // Entkopplung
+    {id:'f_ek_matte',label:'Entkopplungsmatte verlegen',calc:'flaeche',einheit:'m²',grp:'Entkopplung'},
+    {id:'f_ek_riss',label:'Rissüberbrückungssystem',calc:'flaeche',einheit:'m²',grp:'Entkopplung'},
+    {id:'f_ek_spannung',label:'Spannungsabbau kritische Untergründe',calc:'flaeche',einheit:'m²',grp:'Entkopplung'},
+    // Wandfliesen
+    {id:'f_wf_standard',label:'Wandfliesen Standardformat',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    {id:'f_wf_gross',label:'Wandfliesen Großformat',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    {id:'f_wf_klein',label:'Wandfliesen Kleinformat',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    {id:'f_wf_mosaik',label:'Wand-Mosaik',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    {id:'f_wf_muster',label:'Wand: besondere Verlegemuster',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    {id:'f_wf_hoehe',label:'Halbhohe/raumhohe Verfliesung',calc:'laengehoehe',einheit:'m²',grp:'Wandfliesen'},
+    // Bodenfliesen
+    {id:'f_bf_standard',label:'Bodenfliesen Standardformat',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_fein',label:'Feinsteinzeug',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_gross',label:'Bodenfliesen Großformat',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_naturstein',label:'Naturstein',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_mosaik',label:'Boden-Mosaik',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_diagonal',label:'Diagonalverlegung',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    {id:'f_bf_verband',label:'Verband / Sondermuster',calc:'flaeche',einheit:'m²',grp:'Bodenfliesen'},
+    // Großformat
+    {id:'f_gf_6060',label:'Großformat 60×60 cm',calc:'flaeche',einheit:'m²',grp:'Großformat'},
+    {id:'f_gf_60120',label:'Großformat 60×120 cm',calc:'flaeche',einheit:'m²',grp:'Großformat'},
+    {id:'f_gf_120120',label:'Großformat 120×120 cm',calc:'flaeche',einheit:'m²',grp:'Großformat'},
+    {id:'f_gf_xxl',label:'XXL-Platten',calc:'flaeche',einheit:'m²',grp:'Großformat'},
+    {id:'f_gf_zulage',label:'Zulage Handling/Zuschnitt Großformat',calc:'flaeche',einheit:'m²',grp:'Großformat'},
+    // Sockelfliesen
+    {id:'f_so_schneiden',label:'Sockel schneiden',calc:'direkt',einheit:'lfm',grp:'Sockelfliesen'},
+    {id:'f_so_setzen',label:'Sockelfliesen setzen',calc:'direkt',einheit:'lfm',grp:'Sockelfliesen'},
+    {id:'f_so_fertig',label:'Fertige Sockelfliesen montieren',calc:'direkt',einheit:'lfm',grp:'Sockelfliesen'},
+    // Zuschnitte
+    {id:'f_zu_gerade',label:'Gerade Zuschnitte',calc:'direkt',einheit:'lfm',grp:'Zuschnitte'},
+    {id:'f_zu_gehrung',label:'Gehrungsschnitte',calc:'direkt',einheit:'lfm',grp:'Zuschnitte'},
+    {id:'f_zu_ecken',label:'Eckausbildungen',calc:'direkt',einheit:'Stk.',grp:'Zuschnitte'},
+    {id:'f_zu_steckdose',label:'Ausschnitte Steckdosen',calc:'direkt',einheit:'Stk.',grp:'Zuschnitte'},
+    {id:'f_zu_armatur',label:'Ausschnitte Armaturen',calc:'direkt',einheit:'Stk.',grp:'Zuschnitte'},
+    {id:'f_zu_rohr',label:'Rohrdurchführungen',calc:'direkt',einheit:'Stk.',grp:'Zuschnitte'},
+    {id:'f_zu_ablauf',label:'Bodenabläufe (Zuschnitt)',calc:'direkt',einheit:'Stk.',grp:'Zuschnitte'},
+    // Kanten / Abschlüsse
+    {id:'f_ka_schiene',label:'Fliesenschienen',calc:'direkt',einheit:'lfm',grp:'Kanten/Abschlüsse'},
+    {id:'f_ka_profil',label:'Abschlussprofile',calc:'direkt',einheit:'lfm',grp:'Kanten/Abschlüsse'},
+    {id:'f_ka_aussen',label:'Außenecken',calc:'direkt',einheit:'Stk.',grp:'Kanten/Abschlüsse'},
+    {id:'f_ka_gehrung',label:'Gehrungskanten',calc:'direkt',einheit:'lfm',grp:'Kanten/Abschlüsse'},
+    {id:'f_ka_ueberg',label:'Übergangsprofile',calc:'direkt',einheit:'lfm',grp:'Kanten/Abschlüsse'},
+    // Verfugung
+    {id:'f_vf_wand',label:'Wandflächen verfugen',calc:'laengehoehe',einheit:'m²',grp:'Verfugung'},
+    {id:'f_vf_boden',label:'Bodenflächen verfugen',calc:'flaeche',einheit:'m²',grp:'Verfugung'},
+    {id:'f_vf_epoxid',label:'Epoxidharzfugen',calc:'flaeche',einheit:'m²',grp:'Verfugung'},
+    {id:'f_vf_spezial',label:'Spezialfugen',calc:'flaeche',einheit:'m²',grp:'Verfugung'},
+    {id:'f_vf_reinigen',label:'Fugen reinigen',calc:'flaeche',einheit:'m²',grp:'Verfugung'},
+    // Silikon
+    {id:'f_si_wb',label:'Silikon Wand/Boden-Anschluss',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_ecken',label:'Silikon Innenecken',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_dusche',label:'Silikon Dusche',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_wanne',label:'Silikon Badewanne',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_wasch',label:'Silikon Waschbecken',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_zarge',label:'Silikon Türzargen',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    {id:'f_si_beweg',label:'Bewegungsfugen',calc:'direkt',einheit:'lfm',grp:'Silikon'},
+    // Duschen / Bäder
+    {id:'f_du_bodengleich',label:'Bodengleiche Dusche fliesen',calc:'flaeche',einheit:'m²',grp:'Duschen/Bäder'},
+    {id:'f_du_gefaelle',label:'Gefälleflächen',calc:'flaeche',einheit:'m²',grp:'Duschen/Bäder'},
+    {id:'f_du_rinne',label:'Duschrinne einarbeiten',calc:'direkt',einheit:'Stk.',grp:'Duschen/Bäder'},
+    {id:'f_du_ablauf',label:'Abläufe einpassen',calc:'direkt',einheit:'Stk.',grp:'Duschen/Bäder'},
+    {id:'f_du_nische',label:'Nischen fliesen',calc:'direkt',einheit:'Stk.',grp:'Duschen/Bäder'},
+    {id:'f_du_vorwand',label:'Vorwandinstallationen fliesen',calc:'laengehoehe',einheit:'m²',grp:'Duschen/Bäder'},
+    // Treppen
+    {id:'f_tr_tritt',label:'Trittstufen fliesen',calc:'direkt',einheit:'Stk.',grp:'Treppen'},
+    {id:'f_tr_setz',label:'Setzstufen fliesen',calc:'direkt',einheit:'Stk.',grp:'Treppen'},
+    {id:'f_tr_podest',label:'Podeste',calc:'flaeche',einheit:'m²',grp:'Treppen'},
+    {id:'f_tr_kante',label:'Treppenkantenprofile',calc:'direkt',einheit:'lfm',grp:'Treppen'},
+    // Fenster / Tür
+    {id:'f_ft_bank',label:'Fensterbänke fliesen',calc:'direkt',einheit:'lfm',grp:'Fenster/Tür'},
+    {id:'f_ft_laib',label:'Laibungen',calc:'direkt',einheit:'lfm',grp:'Fenster/Tür'},
+    {id:'f_ft_sturz',label:'Stürze',calc:'direkt',einheit:'lfm',grp:'Fenster/Tür'},
+    {id:'f_ft_tuer',label:'Türanschlüsse',calc:'direkt',einheit:'Stk.',grp:'Fenster/Tür'},
+    // Sonderarbeiten
+    {id:'f_sd_revision',label:'Revisionsöffnungen',calc:'direkt',einheit:'Stk.',grp:'Sonderarbeiten'},
+    {id:'f_sd_magnet',label:'Magnet-Fliesenklappen',calc:'direkt',einheit:'Stk.',grp:'Sonderarbeiten'},
+    {id:'f_sd_ablage',label:'Geflieste Ablagen',calc:'direkt',einheit:'Stk.',grp:'Sonderarbeiten'},
+    {id:'f_sd_nische',label:'Wandnischen',calc:'direkt',einheit:'Stk.',grp:'Sonderarbeiten'},
+    {id:'f_sd_vorsprung',label:'Vorsprünge',calc:'direkt',einheit:'lfm',grp:'Sonderarbeiten'},
+    {id:'f_sd_saeule',label:'Säulen und Pfeiler',calc:'laengehoehe',einheit:'m²',grp:'Sonderarbeiten'},
+    // Abschluss
+    {id:'f_as_reinigen',label:'Flächen reinigen',calc:'flaeche',einheit:'m²',grp:'Abschluss'},
+    {id:'f_as_schleier',label:'Zementschleier entfernen',calc:'flaeche',einheit:'m²',grp:'Abschluss'},
+    {id:'f_as_schutz',label:'Schutzabdeckung aufbringen',calc:'flaeche',einheit:'m²',grp:'Abschluss'},
+    {id:'f_as_besenrein',label:'Besenreine Übergabe',calc:'direkt',einheit:'Psch.',grp:'Abschluss'},
+  ],
+  boden:[
+    // Baustelle / Schutz
+    {id:'b_baustelle',label:'Baustelleneinrichtung',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'b_schutz',label:'Angrenzende Flächen schützen',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'b_laufweg',label:'Laufwege abdecken',calc:'flaeche',einheit:'m²',grp:'Baustelle/Schutz'},
+    {id:'b_staub',label:'Staubschutz',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    {id:'b_material',label:'Material anliefern und einlagern',calc:'direkt',einheit:'Psch.',grp:'Baustelle/Schutz'},
+    // Altbelag entfernen
+    {id:'b_pvcab',label:'PVC / CV-Belag aufnehmen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'b_vinylab',label:'Vinyl / Designbelag entfernen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'b_laminatab',label:'Laminat entfernen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'b_parkettab',label:'Parkett aufnehmen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    {id:'b_sockelab',label:'Sockelleisten entfernen',calc:'direkt',einheit:'lfm',grp:'Altbelag'},
+    {id:'b_kleberab',label:'Kleberreste beseitigen',calc:'flaeche',einheit:'m²',grp:'Altbelag'},
+    // Entsorgung
+    {id:'b_ent_alt',label:'Entsorgung Altbeläge',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    {id:'b_ent_kleber',label:'Entsorgung Kleber-/Spachtelreste',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    {id:'b_ent_sockel',label:'Entsorgung Sockelleisten',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    {id:'b_ent_verp',label:'Entsorgung Verpackung/Restmaterial',calc:'direkt',einheit:'Psch.',grp:'Entsorgung'},
+    // Untergrund prüfen
+    {id:'b_pr_eben',label:'Ebenheit prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'b_pr_feuchte',label:'Restfeuchte messen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'b_pr_fest',label:'Untergrundfestigkeit prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    {id:'b_pr_risse',label:'Risse und Schadstellen prüfen',calc:'direkt',einheit:'Psch.',grp:'Untergrund prüfen'},
+    // Untergrund vorbereiten
+    {id:'b_vor_reinigen',label:'Reinigen / absaugen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'b_vor_schleifen',label:'Schleifen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'b_vor_fraesen',label:'Fräsen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'b_vor_kleber',label:'Kleberreste entfernen',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    {id:'b_vor_grund',label:'Grundieren / Haftgrund',calc:'flaeche',einheit:'m²',grp:'Untergrund vorbereiten'},
+    // Spachtel / Ausgleich
+    {id:'b_sp_fehl',label:'Fehlstellen schließen',calc:'direkt',einheit:'Psch.',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_risse',label:'Risse verharzen',calc:'direkt',einheit:'lfm',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_partiell',label:'Partiell spachteln',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_nivell',label:'Vollflächig nivellieren',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_3',label:'Ausgleichsmasse bis 3 mm',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_310',label:'Ausgleichsmasse 3–10 mm',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_stark',label:'Stärkere Ausgleichsschichten',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    {id:'b_sp_hoehe',label:'Höhenunterschiede ausgleichen',calc:'flaeche',einheit:'m²',grp:'Spachtel/Ausgleich'},
+    // Feuchtigkeitsschutz
+    {id:'b_fs_sperre',label:'Feuchtigkeitssperre',calc:'flaeche',einheit:'m²',grp:'Feuchtigkeitsschutz'},
+    {id:'b_fs_epoxid',label:'Epoxidharzgrundierung',calc:'flaeche',einheit:'m²',grp:'Feuchtigkeitsschutz'},
+    {id:'b_fs_dampf',label:'Dampfbremse / Dampfsperre',calc:'flaeche',einheit:'m²',grp:'Feuchtigkeitsschutz'},
+    // Trittschall / Unterlagen
+    {id:'b_ts_tritt',label:'Trittschalldämmung',calc:'flaeche',einheit:'m²',grp:'Trittschall/Unterlage'},
+    {id:'b_ts_pe',label:'PE-Folie',calc:'flaeche',einheit:'m²',grp:'Trittschall/Unterlage'},
+    {id:'b_ts_daemm',label:'Dämmunterlage',calc:'flaeche',einheit:'m²',grp:'Trittschall/Unterlage'},
+    {id:'b_ts_trenn',label:'Trennlage',calc:'flaeche',einheit:'m²',grp:'Trittschall/Unterlage'},
+    // Vinyl / Design
+    {id:'b_vi_klick',label:'Klickvinyl verlegen',calc:'flaeche',einheit:'m²',grp:'Vinyl/Design'},
+    {id:'b_vi_klebe',label:'Klebevinyl verlegen',calc:'flaeche',einheit:'m²',grp:'Vinyl/Design'},
+    {id:'b_vi_planken',label:'Designplanken verlegen',calc:'flaeche',einheit:'m²',grp:'Vinyl/Design'},
+    {id:'b_vi_fliesen',label:'Designfliesen (Vinyl) verlegen',calc:'flaeche',einheit:'m²',grp:'Vinyl/Design'},
+    {id:'b_vi_sonder',label:'Sonderverlegung (z.B. Fischgrät)',calc:'flaeche',einheit:'m²',grp:'Vinyl/Design'},
+    {id:'b_vi_rand',label:'Randanschlüsse und Zuschnitte',calc:'direkt',einheit:'lfm',grp:'Vinyl/Design'},
+    // Laminat
+    {id:'b_la_verlegen',label:'Laminat schwimmend verlegen',calc:'flaeche',einheit:'m²',grp:'Laminat'},
+    {id:'b_la_unterlage',label:'Unterlage verlegen',calc:'flaeche',einheit:'m²',grp:'Laminat'},
+    {id:'b_la_rand',label:'Randanschlüsse',calc:'direkt',einheit:'lfm',grp:'Laminat'},
+    {id:'b_la_tuer',label:'Türanschlüsse',calc:'direkt',einheit:'Stk.',grp:'Laminat'},
+    // Parkett
+    {id:'b_pa_schwimm',label:'Fertigparkett schwimmend verlegen',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_klebe',label:'Fertigparkett vollflächig verkleben',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_massiv',label:'Massivparkett verlegen',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_fischgrraet',label:'Fischgrät / besondere Verbände',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_schleifen',label:'Parkett schleifen',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_oelen',label:'Parkett ölen',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    {id:'b_pa_versiegeln',label:'Parkett versiegeln',calc:'flaeche',einheit:'m²',grp:'Parkett'},
+    // Linoleum / PVC / Kautschuk
+    {id:'b_li_bahnen',label:'Bahnenware verlegen',calc:'flaeche',einheit:'m²',grp:'Linoleum/PVC/Kautschuk'},
+    {id:'b_li_planken',label:'Planken / Platten verlegen',calc:'flaeche',einheit:'m²',grp:'Linoleum/PVC/Kautschuk'},
+    {id:'b_li_kleben',label:'Vollflächig verkleben',calc:'flaeche',einheit:'m²',grp:'Linoleum/PVC/Kautschuk'},
+    {id:'b_li_naht',label:'Nähte schneiden',calc:'direkt',einheit:'lfm',grp:'Linoleum/PVC/Kautschuk'},
+    {id:'b_li_schweiss',label:'Nähte verschweißen',calc:'direkt',einheit:'lfm',grp:'Linoleum/PVC/Kautschuk'},
+    // Sockelleisten
+    {id:'b_so_mdf',label:'MDF-Sockelleisten',calc:'direkt',einheit:'lfm',grp:'Sockelleisten'},
+    {id:'b_so_holz',label:'Holzsockelleisten',calc:'direkt',einheit:'lfm',grp:'Sockelleisten'},
+    {id:'b_so_kunst',label:'Kunststoffsockelleisten',calc:'direkt',einheit:'lfm',grp:'Sockelleisten'},
+    {id:'b_so_montage',label:'Sockelleisten montieren',calc:'direkt',einheit:'lfm',grp:'Sockelleisten'},
+    {id:'b_so_ecken',label:'Innen-/Außenecken',calc:'direkt',einheit:'Stk.',grp:'Sockelleisten'},
+    {id:'b_so_end',label:'Endstücke',calc:'direkt',einheit:'Stk.',grp:'Sockelleisten'},
+    // Übergänge / Profile
+    {id:'b_pr_ueberg',label:'Übergangsschienen',calc:'direkt',einheit:'Stk.',grp:'Übergänge/Profile'},
+    {id:'b_pr_abschluss',label:'Abschlussprofile',calc:'direkt',einheit:'lfm',grp:'Übergänge/Profile'},
+    {id:'b_pr_dehn',label:'Dehnfugenprofile',calc:'direkt',einheit:'lfm',grp:'Übergänge/Profile'},
+    {id:'b_pr_hoehe',label:'Höhenausgleichsprofile',calc:'direkt',einheit:'lfm',grp:'Übergänge/Profile'},
+    // Türbereiche
+    {id:'b_tu_unter',label:'Türzargen unterschneiden',calc:'direkt',einheit:'Stk.',grp:'Türbereiche'},
+    {id:'b_tu_einpass',label:'Belag unter Zargen einpassen',calc:'direkt',einheit:'Stk.',grp:'Türbereiche'},
+    {id:'b_tu_kuerzen',label:'Türblätter kürzen',calc:'direkt',einheit:'Stk.',grp:'Türbereiche'},
+    {id:'b_tu_ueberg',label:'Übergänge herstellen',calc:'direkt',einheit:'Stk.',grp:'Türbereiche'},
+    // Ausschnitte / Erschwernisse
+    {id:'b_au_rohr',label:'Heizungsrohre',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'b_au_dose',label:'Bodensteckdosen',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'b_au_tank',label:'Bodentanks',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'b_au_stuetze',label:'Stützen',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'b_au_nische',label:'Nischen',calc:'direkt',einheit:'Stk.',grp:'Ausschnitte'},
+    {id:'b_au_klein',label:'Kleine/verwinkelte Räume (Zulage)',calc:'direkt',einheit:'Psch.',grp:'Ausschnitte'},
+    // Treppen
+    {id:'b_tr_stufe',label:'Stufen belegen',calc:'direkt',einheit:'Stk.',grp:'Treppen'},
+    {id:'b_tr_setz',label:'Setzstufen belegen',calc:'direkt',einheit:'Stk.',grp:'Treppen'},
+    {id:'b_tr_kante',label:'Treppenkantenprofile',calc:'direkt',einheit:'Stk.',grp:'Treppen'},
+    {id:'b_tr_podest',label:'Podeste belegen',calc:'flaeche',einheit:'m²',grp:'Treppen'},
+    // Abschluss
+    {id:'b_ab_fuge',label:'Anschlussfugen',calc:'direkt',einheit:'lfm',grp:'Abschluss'},
+    {id:'b_ab_acryl',label:'Acryl-/elastische Fugen',calc:'direkt',einheit:'lfm',grp:'Abschluss'},
+    {id:'b_ab_reinigung',label:'Reinigung',calc:'direkt',einheit:'Psch.',grp:'Abschluss'},
+    {id:'b_ab_schutz',label:'Schutzabdeckung',calc:'flaeche',einheit:'m²',grp:'Abschluss'},
+    {id:'b_ab_besenrein',label:'Besenreine Übergabe',calc:'direkt',einheit:'Psch.',grp:'Abschluss'},
+  ],
+};
+const PAUSCHAL=[
+  {id:'abdeck',label:'Abdeckarbeiten',calc:'direkt',einheit:'Psch.',grp:'Sonstiges'},
+  {id:'muell',label:'Müll-/Schuttentsorgung',calc:'direkt',einheit:'Psch.',grp:'Sonstiges'},
+  {id:'baustelle',label:'Baustelleneinrichtung',calc:'direkt',einheit:'Psch.',grp:'Sonstiges'},
+];
+// Übernahme-Zuordnung Quelle(gewerk:posId) -> Zielpositionen (im aktuellen Zielgewerk)
+const UEBER={
+  maler:{group:['Wand','Spachteln','Gipskarton','Tapeten','Untergrund'], from:['trockenbau']},
+  fliesen:{group:['Wandfliesen','Bodenfliesen','Abdichtung','Verfugung'], from:['trockenbau','boden']},
+  boden:{group:['Vinyl/Design','Laminat','Parkett','Untergrund vorbereiten','Spachtel/Ausgleich'], from:['trockenbau','fliesen']},
+};
+
+// ---- State + DB ----
+let db=null, A=null, aktGewerk='trockenbau', aktRaum=0, schritt=0, editId=null, editStd=null;
+const DB='aufmasspro_web', VER=1;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,VER);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('aufmasse'))d.createObjectStore('aufmasse',{keyPath:'id'});if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta');};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function tx(s,m){return db.transaction(s,m).objectStore(s)}
+const dbAll=()=>new Promise((res,rej)=>{const r=tx('aufmasse','readonly').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)});
+const dbGet=id=>new Promise((res,rej)=>{const r=tx('aufmasse','readonly').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error)});
+const dbPut=rec=>new Promise((res,rej)=>{const r=tx('aufmasse','readwrite').put(rec);r.onsuccess=()=>res(1);r.onerror=()=>rej(r.error)});
+const dbDel=id=>new Promise((res,rej)=>{const r=tx('aufmasse','readwrite').delete(id);r.onsuccess=()=>res(1);r.onerror=()=>rej(r.error)});
+const metaGet=k=>new Promise((res,rej)=>{const r=tx('meta','readonly').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const metaPut=(k,v)=>new Promise((res,rej)=>{const r=tx('meta','readwrite').put(v,k);r.onsuccess=()=>res(1);r.onerror=()=>rej(r.error)});
+let CUSTOM={};
+
+// ---- Utils ----
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function toNum(v){return parseFloat((v||'').toString().replace(',','.').replace(/\s/g,''))||0}
+function fmt(v){return (Math.round(v*100)/100).toFixed(2).replace('.',',')}
+let tT=null;function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='on'+(e?' err':'');clearTimeout(tT);tT=setTimeout(()=>t.className='',2400)}
+function gw(){return GEWERKE.find(g=>g.id===aktGewerk)}
+function setAccent(c){document.documentElement.style.setProperty('--accent',c)}
+function calcWert(p){const f=p.felder||{};let w=0;if(p.calc==='flaeche')w=toNum(f.laenge)*toNum(f.breite);else if(p.calc==='laengehoehe')w=toNum(f.laenge)*toNum(f.hoehe);else w=toNum(f.wert);w*=(p.faktor||1)*(toNum(p.anzahl)||1);w-=toNum(p.abzug);return w<0?0:w}
+function calcUmfang(p){const f=p.felder||{};if(p.calc==='flaeche')return 2*(toNum(f.laenge)+toNum(f.breite))*(p.faktor||1);if(p.calc==='laengehoehe')return 2*(toNum(f.laenge)+toNum(f.hoehe))*(p.faktor||1);return 0}
+function allStd(g){return [...(STD[g]||[]),...PAUSCHAL,...(CUSTOM[g]||[])]}
+
+// ---- Speicherung laufend ----
+let sT=null;function save(){if(!A)return;clearTimeout(sT);sT=setTimeout(()=>{A.datum=new Date().toISOString();dbPut(A).catch(()=>toast('Speichern fehlgeschlagen',true))},300)}
+
+// ---- Navigation ----
+function setProg(n){for(let i=1;i<=4;i++)document.getElementById('pb'+i).className='pb'+(i<=n?' on':'')}
+function go(n){schritt=n;document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');document.getElementById('nav').style.display='flex';setProg(n);head();if(n===2)renderRaeume();if(n===3)renderPos();if(n===4)renderSum();scrollTo(0,0)}
+function goOrdner(){schritt=0;document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));document.getElementById('s0').classList.add('active');setProg(0);document.getElementById('ht').textContent='📐 AufmaßPro';document.getElementById('hs').textContent='Meine Aufmaße';document.getElementById('nav').style.display='none';renderOrdner();scrollTo(0,0)}
+function head(){const g=gw();const k=document.getElementById('ik').value,a=document.getElementById('ia').value;document.getElementById('ht').textContent=g.icon+' AufmaßPro';document.getElementById('hs').textContent=(schritt===3?g.label+' · ':'')+(k||'')+(a?' · '+a:'')||'—'}
+
+// ---- Nav (Gewerke) ----
+function renderNav(){document.getElementById('nav').innerHTML=GEWERKE.map(g=>`<button class="nb ${g.id===aktGewerk?'on':''}" onclick="switchG('${g.id}')"><span class="ni">${g.icon}</span>${esc(g.label.replace('arbeiten','').replace('belag',''))}</button>`).join('')}
+function switchG(id){aktGewerk=id;setAccent(gw().color);renderNav();if(schritt===3)renderPos();if(schritt===2)renderRaeume();if(schritt===4)renderSum();head()}
+
+// ---- Ordner ----
+async function renderOrdner(){let list;try{list=await dbAll()}catch(e){return}const el=document.getElementById('alist');if(!list.length){el.innerHTML='<div class="empty"><div style="font-size:46px">📋</div><p style="color:#dde2ec;font-weight:700;margin-top:8px">Noch keine Aufmaße</p></div>';return}list.sort((a,b)=>new Date(b.datum||0)-new Date(a.datum||0));el.innerHTML=list.map(a=>{const d=new Date(a.datum||Date.now()).toLocaleDateString('de-DE');return `<div class="aitem"><div class="arow" onclick="oeffne('${a.id}')"><span class="ai">📋</span><div style="flex:1;min-width:0"><div class="t">${esc(a.kunde||'Unbekannt')}</div><div class="sub">${esc(a.adresse||'–')} · ${(a.raeume||[]).length} Räume · ${d}</div></div><button class="adel" onclick="event.stopPropagation();delA('${a.id}')">🗑</button></div></div>`}).join('')}
+async function delA(id){if(!confirm('Aufmaß wirklich löschen?'))return;await dbDel(id);toast('Gelöscht');renderOrdner()}
+async function oeffne(id){A=await dbGet(id);if(!A)return;aktGewerk=A.aktGewerk||'trockenbau';aktRaum=0;setAccent(gw().color);renderNav();document.getElementById('ik').value=A.kunde||'';document.getElementById('ia').value=A.adresse||'';document.getElementById('ibvh').value=A.bvh||'';document.getElementById('itel').value=A.telefon||'';document.getElementById('ietage').value=A.etage||'';renderObj();go(A.raeume&&A.raeume.length?2:1)}
+
+function neu(){A={id:'a'+Date.now(),kunde:'',adresse:'',bvh:'',telefon:'',etage:'',objektTyp:null,aktGewerk:'trockenbau',erstellt:new Date().toISOString(),datum:new Date().toISOString(),raeume:[]};aktGewerk='trockenbau';aktRaum=0;setAccent(gw().color);renderNav();document.getElementById('ik').value='';document.getElementById('ia').value='';document.getElementById('ibvh').value='';document.getElementById('itel').value='';document.getElementById('ietage').value='';renderObj();go(1)}
+
+// ---- Schritt 1 ----
+function s1valid(){return !!(A&&A.objektTyp&&(A.kunde||'').trim()&&(A.adresse||'').trim())}
+function updB1(){const b=document.getElementById('b1');b.disabled=!s1valid();b.textContent=s1valid()?'Weiter → Räume':'Name & Adresse ausfüllen'}
+function renderObj(){document.getElementById('og').innerHTML=OBJ.map(o=>`<button class="ob ${A&&A.objektTyp===o.id?'on':''}" onclick="pickObj('${o.id}')"><span class="oi">${o.i}</span>${o.l}</button>`).join('');updB1()}
+function pickObj(id){A.objektTyp=id;renderObj();save();updB1();if(s1valid())setTimeout(()=>{if(schritt===1)go(2)},130)}
+function onKd(){if(!A)return;A.kunde=document.getElementById('ik').value;A.adresse=document.getElementById('ia').value;A.bvh=document.getElementById('ibvh').value;A.telefon=document.getElementById('itel').value;A.etage=document.getElementById('ietage').value;head();save();updB1()}
+
+// ---- Schritt 2 Räume ----
+function raum(){return A.raeume[aktRaum]}
+function renderRaeume(){const g=gw();document.getElementById('s2l').textContent='Räume · '+g.label;const el=document.getElementById('rlist');el.innerHTML=A.raeume.map((r,i)=>{const n=(r.positionen&&r.positionen[aktGewerk]?r.positionen[aktGewerk].length:0);const c=n>0?g.color:'#4a5568';return `<button class="rb ${i===aktRaum?'on':''}" onclick="selRaum(${i})"><span>${esc(r.name)}</span><span class="badge" style="background:${c}22;color:${c}">${n} Pos.</span></button>`}).join('');const vor=(RVOR[A.objektTyp]||[]).filter(v=>!A.raeume.some(r=>r.name===v));document.getElementById('rchips').innerHTML=vor.map(v=>`<button class="chip" onclick="addRaum('${esc(v)}')">+ ${esc(v)}</button>`).join('')}
+function addRaum(name){name=(name||'').trim();if(!name)return;let i=A.raeume.findIndex(r=>r.name===name);if(i<0){A.raeume.push({name,notiz:{},fotos:[],positionen:{}});i=A.raeume.length-1}aktRaum=i;save();go(3)}
+function addRaumC(){const v=document.getElementById('ir').value;document.getElementById('ir').value='';addRaum(v)}
+function selRaum(i){aktRaum=i;go(3)}
+
+// ---- Schritt 3 Positionen ----
+function posArr(){const r=raum();if(!r.positionen[aktGewerk])r.positionen[aktGewerk]=[];return r.positionen[aktGewerk]}
+function renderPos(){const g=gw();setAccent(g.color);document.getElementById('s3g').textContent=g.label;document.getElementById('s3r').textContent=raum().name;document.getElementById('rnotiz').value=(raum().notiz&&raum().notiz[aktGewerk])||'';renderFotos();
+  const arr=posArr();const groups={};arr.forEach((p,idx)=>{const gr=p.gruppe||'Positionen';(groups[gr]=groups[gr]||[]).push({p,idx})});
+  let html='';Object.keys(groups).forEach(gr=>{const items=groups[gr];let sumW=0,sumU=0;items.forEach(({p})=>{sumW+=calcWert(p);sumU+=calcUmfang(p)});
+    html+=`<div class="grp"><div class="grph" onclick="void 0"><div><div class="t">${esc(gr.toUpperCase())} – ${esc(raum().name.toUpperCase())}</div><div class="s">${items.length} Position(en) · ${fmt(sumW)} m² · Umfang ${fmt(sumU)} m</div></div></div>`;
+    items.forEach(({p,idx})=>{const w=calcWert(p),u=calcUmfang(p);const f=p.felder||{};let eing='';if(p.calc==='flaeche')eing=`${fmt(toNum(f.laenge))} × ${fmt(toNum(f.breite))} m`;else if(p.calc==='laengehoehe')eing=`${fmt(toNum(f.laenge))} × ${fmt(toNum(f.hoehe))} m (Höhe)`;else eing=`${fmt(toNum(f.wert))}`;if(p.faktor&&p.faktor>1)eing+=` × ${p.faktor}`;
+      html+=`<div class="pc" onclick="openEdit(${idx})"><div class="h"><div><span class="num">#${idx+1}</span></div><div><div class="nm">${esc(p.label)}</div>${p.quelle?`<div class="src">aus: ${esc(p.quelle)}</div>`:''}</div></div><div class="calc">${eing}</div>${(p.fotos&&p.fotos.length)?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${p.fotos.map(s=>`<img src="${s}" style="width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #222537"/>`).join('')}</div>`:''}<div class="resbox"><div class="rc"><div class="rl">${p.isAbzug?'Abzug':'Wert'}</div><div class="rv" style="color:${p.isAbzug?'#ef4444':g.color}">${p.isAbzug?'− ':''}${fmt(w)} ${esc(p.einheit)}</div></div>${u>0?`<div class="rc"><div class="rl">Umfang</div><div class="rv" style="color:#34d399">${fmt(u)} m</div></div>`:''}</div></div>`});
+    html+=`</div>`});
+  html+=`<button class="addp" onclick="close_('ovWaehlen');openEdit(null)">+ Eigene Position hinzufügen</button>`;
+  // Summe Gewerk/Raum
+  let tot=0;arr.forEach(p=>tot+=p.isAbzug?-calcWert(p):calcWert(p));
+  html+=`<div class="sumbox"><div class="st">Σ ${esc(g.label)} – ${esc(raum().name)}</div>`+ (arr.length?arr.map(p=>`<div class="sumrow"><span>${esc(p.label)}</span><span style="font-weight:800;color:${p.isAbzug?'#ef4444':g.color}">${p.isAbzug?'− ':''}${fmt(calcWert(p))} ${esc(p.einheit)}</span></div>`).join(''):'<div class="hint">Noch keine Werte eingegeben</div>')+`</div>`;
+  document.getElementById('plist').innerHTML=html}
+
+function saveNotiz(){if(!raum().notiz)raum().notiz={};raum().notiz[aktGewerk]=document.getElementById('rnotiz').value;save()}
+
+// ---- Position wählen (Katalog) ----
+function openWaehlen(){const arr=allStd(aktGewerk);document.getElementById('catlist').innerHTML=arr.map((s,i)=>`<button class="catbtn" oncontextmenu="return tplMenu(event,'${s.id}')" onclick="addFromStd('${s.id}')"><span>${esc(s.label)}${s.custom?' ★':''}</span><span class="u">${esc(s.einheit)}</span></button>`).join('');document.getElementById('ovWaehlen').classList.add('open')}
+function addFromStd(id){const s=allStd(aktGewerk).find(x=>x.id===id);if(!s)return;const p={id:'p'+Date.now(),label:s.label,calc:s.calc,einheit:s.einheit,felder:{},anzahl:1,abzug:0,isAbzug:!!s.abzug,faktor:1,gruppe:s.grp||'Positionen',staender:!!s.staender};posArr().push(p);save();close_('ovWaehlen');renderPos();openEdit(posArr().length-1)}
+function tplMenu(e,id){e.preventDefault();const s=(CUSTOM[aktGewerk]||[]).find(x=>x.id===id);if(!s){toast('Nur eigene Vorlagen',true);return false}const a=prompt('Vorlage umbenennen (leer = löschen):',s.label);if(a===null)return false;if(a.trim()===''){CUSTOM[aktGewerk]=CUSTOM[aktGewerk].filter(x=>x.id!==id);toast('Vorlage gelöscht')}else{s.label=a.trim();toast('Umbenannt')}metaPut('custom',CUSTOM);openWaehlen();return false}
+
+// ---- Position bearbeiten ----
+function openEdit(idx){editId=idx;const g=gw();let p;if(idx==null){p={id:'p'+Date.now(),label:'',calc:'flaeche',einheit:'m²',felder:{},anzahl:1,abzug:0,isAbzug:false,faktor:1,gruppe:'Positionen'};editStd=p;document.getElementById('editTitle').textContent='Neue Position';document.getElementById('asTplWrap').style.display='flex'}else{p=posArr()[idx];editStd=null;document.getElementById('editTitle').textContent='Position bearbeiten';document.getElementById('asTplWrap').style.display='none'}
+  document.getElementById('eLabel').value=p.label;
+  document.getElementById('eCalc').innerHTML=CALC.map(c=>`<button class="sgb ${c.id===p.calc?'on':''}" onclick="editCalc('${c.id}')">${c.l}</button>`).join('');
+  document.getElementById('eAnz').value=p.anzahl||1;document.getElementById('eAbzug').value=p.abzug||0;
+  document.getElementById('eEinheit').value=p.einheit||'';document.getElementById('eIsAbzug').checked=!!p.isAbzug;
+  document.getElementById('eUnits').innerHTML=UNITS.map(u=>`<button class="chip" onclick="document.getElementById('eEinheit').value='${u}'">${u}</button>`).join('');
+  document.getElementById('eAsTpl').checked=true;
+  if(!p.fotos)p.fotos=[];window._ep=p;renderPosEditorFotos();editFields();document.getElementById('ovEdit').classList.add('open')}
+function editCalc(c){window._ep.calc=c;document.getElementById('eCalc').querySelectorAll('.sgb').forEach(b=>b.classList.toggle('on',b.textContent===CALC.find(x=>x.id===c).l));editFields()}
+function editFields(){const p=window._ep;const c=CALC.find(x=>x.id===p.calc);const f=p.felder||{};
+  document.getElementById('eFields').innerHTML=c.f.map((k,i)=>`<div style="margin-bottom:10px"><span class="lbl">${c.lab[i]}</span><input class="si" inputmode="decimal" id="ef_${k}" value="${esc(f[k]||'')}" oninput="liveRes()" placeholder="0"/></div>`).join('');liveRes()}
+function liveRes(){const p=window._ep;const c=CALC.find(x=>x.id===p.calc);const f={};c.f.forEach(k=>{const el=document.getElementById('ef_'+k);if(el)f[k]=el.value});const tmp={calc:p.calc,felder:f,anzahl:document.getElementById('eAnz').value,abzug:document.getElementById('eAbzug').value,faktor:p.faktor||1};document.getElementById('eRes').textContent=fmt(calcWert(tmp))+' '+(document.getElementById('eEinheit').value||'');const u=calcUmfang(tmp);document.getElementById('eUmf').textContent=u>0?fmt(u)+' m':'–'}
+document.addEventListener('input',e=>{if(['eAnz','eAbzug','eEinheit'].includes(e.target.id))liveRes()});
+function saveEdit(){const p=window._ep;p.label=document.getElementById('eLabel').value.trim()||'Position';const c=CALC.find(x=>x.id===p.calc);p.felder={};c.f.forEach(k=>{p.felder[k]=(document.getElementById('ef_'+k)||{}).value||''});p.anzahl=toNum(document.getElementById('eAnz').value)||1;p.abzug=toNum(document.getElementById('eAbzug').value);p.einheit=document.getElementById('eEinheit').value||'m²';p.isAbzug=document.getElementById('eIsAbzug').checked;
+  if(editId==null){posArr().push(p);if(document.getElementById('eAsTpl').checked){if(!CUSTOM[aktGewerk])CUSTOM[aktGewerk]=[];if(!CUSTOM[aktGewerk].some(x=>x.label===p.label)){CUSTOM[aktGewerk].push({id:'c'+Date.now(),label:p.label,calc:p.calc,einheit:p.einheit,grp:'Sonstiges',custom:true});metaPut('custom',CUSTOM)}}}
+  save();close_('ovEdit');renderPos()}
+
+// ---- Werte-Übernahme ----
+let ueberCtx=null;
+function uebernahmeStart(){const cfg=UEBER[aktGewerk];if(!cfg){toast('Für dieses Gewerk keine Übernahme',true);return}const r=raum();let quellen=[];(cfg.from||[]).forEach(fg=>{(r.positionen[fg]||[]).forEach(p=>{const w=calcWert({...p,isAbzug:false});if(w>0&&!p.isAbzug)quellen.push({fg,p,w})})});if(!quellen.length){toast('Keine übernehmbaren Werte im Raum',true);return}
+  // nimm die erste geeignete Quelle (einfachheitshalber die größte Fläche)
+  quellen.sort((a,b)=>b.w-a.w);ueberCtx={quelle:quellen[0],faktor:1};
+  if(quellen[0].p.staender){document.getElementById('seitenTitle').textContent=quellen[0].p.label;document.getElementById('seitenHint').textContent='Ständerwerk hat zwei Seiten. Welche sollen für '+gw().label+' übernommen werden?';document.getElementById('ovSeiten').classList.add('open')}
+  else{ueberCtx.faktor=1;openZiel()}}
+function seitenPick(n){ueberCtx.faktor=n;close_('ovSeiten');openZiel()}
+function openZiel(){const cfg=UEBER[aktGewerk];const q=ueberCtx.quelle;const flaeche=q.w*ueberCtx.faktor;document.getElementById('zielHint').textContent=q.p.label+' → '+fmt(flaeche)+' m²'+(ueberCtx.faktor>1?' ('+ueberCtx.faktor+' Seiten)':'');
+  const targets=(STD[aktGewerk]||[]).filter(s=>(cfg.group||[]).includes(s.grp));
+  document.getElementById('zielList').innerHTML=targets.map(t=>`<div class="tsel" data-id="${t.id}" onclick="this.classList.toggle('on')"><div class="ck">✓</div><div style="flex:1">${esc(t.label)}</div><div style="color:#4a5568">${fmt(flaeche)} ${esc(t.einheit)}</div></div>`).join('');
+  document.getElementById('ovZiel').classList.add('open')}
+function zielApply(){const cfg=UEBER[aktGewerk];const q=ueberCtx.quelle;const sel=[...document.querySelectorAll('#zielList .tsel.on')].map(e=>e.dataset.id);if(!sel.length){toast('Nichts ausgewählt',true);return}
+  sel.forEach(id=>{const t=(STD[aktGewerk]||[]).find(s=>s.id===id);const np={id:'p'+Date.now()+Math.random().toString(36).slice(2,5),label:t.label,calc:q.p.calc,einheit:t.einheit,felder:{...(q.p.felder||{})},anzahl:q.p.anzahl||1,abzug:0,isAbzug:false,faktor:ueberCtx.faktor,gruppe:t.grp,quelle:q.p.label};posArr().push(np)});
+  save();close_('ovZiel');renderPos();toast('Maße übernommen')}
+
+// ---- Fotos ----
+function posFotoAdd(e){const files=[...(e.target.files||[])];e.target.value='';const p=window._ep;if(!p)return;if(!p.fotos)p.fotos=[];files.forEach(file=>{const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,m=1280;if(Math.max(w,h)>m){const s=m/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);p.fotos.push(c.toDataURL('image/jpeg',0.7));renderPosEditorFotos();save()};img.src=rd.result};rd.readAsDataURL(file)})}
+function renderPosEditorFotos(){const p=window._ep;const el=document.getElementById('posfgrid');if(!el)return;const fs=(p&&p.fotos)||[];el.innerHTML=fs.map((src,i)=>`<div class="fwrap"><img class="foto" src="${src}"/><button class="fdel" onclick="posFotoDel(${i})">✕</button></div>`).join('')}
+function posFotoDel(i){const p=window._ep;if(!p||!p.fotos)return;p.fotos.splice(i,1);renderPosEditorFotos();save()}
+function fotoAdd(e){const files=[...(e.target.files||[])];e.target.value='';const r=raum();if(!r.fotos)r.fotos=[];files.forEach(file=>{const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,m=1280;if(Math.max(w,h)>m){const s=m/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);r.fotos.push(c.toDataURL('image/jpeg',0.7));renderFotos();save()};img.src=rd.result};rd.readAsDataURL(file)})}
+function renderFotos(){const r=raum();const el=document.getElementById('fgrid');el.innerHTML=(r.fotos||[]).map((s,i)=>`<div class="fwrap"><img class="foto" src="${s}"/><button class="fdel" onclick="r_fdel(${i})">✕</button></div>`).join('')}
+function r_fdel(i){raum().fotos.splice(i,1);renderFotos();save()}
+
+// ---- Auswertung ----
+function renderSum(){const oTyp=(OBJ.find(o=>o.id===A.objektTyp)||{}).l||'–';const withData=GEWERKE.filter(g=>A.raeume.some(r=>r.positionen&&r.positionen[g.id]&&r.positionen[g.id].length)).length;
+  document.getElementById('sumhead').innerHTML=`<p style="font-weight:800;font-size:17px">${esc(A.kunde||'–')}</p><p style="color:#4a5568;font-size:14px">${esc(A.adresse||'–')} · ${esc(oTyp)}</p><p style="color:#4a5568;font-size:13px;margin-top:4px">${A.raeume.length} Räume · Gewerke mit Daten ${withData}/4</p>${(A.telefon||A.etage)?`<p style="color:#4a5568;font-size:13px">${A.telefon?'☎ '+esc(A.telefon):''}${A.telefon&&A.etage?' · ':''}${A.etage?'Etage: '+esc(A.etage):''}</p>`:''}`;
+  let html='';GEWERKE.forEach(g=>{const rooms=A.raeume.filter(r=>r.positionen&&r.positionen[g.id]&&r.positionen[g.id].length);if(!rooms.length)return;html+=`<div class="sumbox" style="--accent:${g.color}"><div class="st">${g.icon} ${esc(g.label)}</div>`;rooms.forEach(r=>{html+=`<div style="font-weight:700;margin:6px 0 2px">${esc(r.name)}</div>`;r.positionen[g.id].forEach(p=>{html+=`<div class="sumrow"><span style="color:${p.isAbzug?'#ef4444':'#dde2ec'}">${p.isAbzug?'− ':''}${esc(p.label)}</span><span style="font-weight:800;color:${p.isAbzug?'#ef4444':g.color}">${p.isAbzug?'− ':''}${fmt(calcWert(p))} ${esc(p.einheit)}</span></div>`;if(p.fotos&&p.fotos.length)html+=`<div style="display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 6px">${p.fotos.map(s=>`<img src="${s}" style="width:48px;height:48px;object-fit:cover;border-radius:5px"/>`).join('')}</div>`})});html+=`</div>`});
+  document.getElementById('sumbody').innerHTML=html||'<div class="hint" style="padding:0 10px">Noch keine Positionen erfasst.</div>'}
+
+// ---- PDF ----
+function exportPDF(){const oTyp=(OBJ.find(o=>o.id===A.objektTyp)||{}).l||'–';const d=new Date().toLocaleDateString('de-DE');let body='';GEWERKE.forEach(g=>{const rooms=A.raeume.filter(r=>r.positionen&&r.positionen[g.id]&&r.positionen[g.id].length);if(!rooms.length)return;body+=`<h2>${g.icon} ${esc(g.label)}</h2>`;rooms.forEach(r=>{body+=`<h3>${esc(r.name)}</h3><table><tr><th>#</th><th>Position</th><th>Typ</th><th>Eingabe</th><th>Anz.</th><th>Umfang</th><th>Wert</th></tr>`;let sum=0;r.positionen[g.id].forEach((p,i)=>{const w=calcWert(p);sum+=p.isAbzug?-w:w;const f=p.felder||{};const typ=p.calc==='flaeche'?'L×B':p.calc==='laengehoehe'?'L×H':'Direkt';let eing=p.calc==='direkt'?fmt(toNum(f.wert)):`${fmt(toNum(f.laenge))} × ${fmt(toNum(f.breite||f.hoehe))} m`;const u=calcUmfang(p);body+=`<tr><td>${i+1}</td><td>${esc(p.label)}${p.quelle?`<br><span style="color:#888;font-size:11px">aus: ${esc(p.quelle)}</span>`:''}</td><td>${typ}</td><td>${eing}</td><td>${p.faktor>1?'× '+p.faktor:''}</td><td>${u>0?fmt(u)+' m':''}</td><td style="text-align:right;font-weight:700">${p.isAbzug?'− ':''}${fmt(w)} ${esc(p.einheit)}</td></tr>`;if(p.fotos&&p.fotos.length)body+=`<tr><td></td><td colspan="6"><div style="display:flex;flex-wrap:wrap;gap:4px">${p.fotos.map(s=>`<img src="${s}" style="width:90px;height:90px;object-fit:cover;border-radius:4px"/>`).join('')}</div></td></tr>`});body+=`<tr><td colspan="6" style="font-weight:700">Σ</td><td style="text-align:right;font-weight:800">${fmt(sum)} m²</td></tr></table>`});});
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>AufmaßPro ${esc(A.kunde)}</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#111;font-size:13px}h1{font-size:22px}h2{margin-top:18px;border-bottom:2px solid #333;padding-bottom:4px}h3{margin:10px 0 4px;font-size:14px}table{width:100%;border-collapse:collapse;margin-bottom:8px}th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:12px}th{background:#f3f3f3}@media print{button{display:none}}</style></head><body><h1>📐 AufmaßPro</h1><p><b>Kunde:</b> ${esc(A.kunde||'–')} · <b>Adresse:</b> ${esc(A.adresse||'–')} · <b>Objekt:</b> ${esc(oTyp)} · <b>Datum:</b> ${d}</p><p><b>Räume:</b> ${A.raeume.length}${A.telefon?' · <b>Telefon:</b> '+esc(A.telefon):''}${A.etage?' · <b>Etage:</b> '+esc(A.etage):''}</p>${body}<p style="text-align:center;color:#888;margin-top:20px">Erstellt mit AufmaßPro · ${d}</p><button onclick="window.print()" style="padding:12px 24px;background:#111;color:#fff;border:none;border-radius:8px;font-size:15px;margin-top:16px">🖨️ PDF speichern / Drucken</button></body></html>`;
+  const w=window.open('','_blank');if(!w){toast('Bitte Popups erlauben',true);return}w.document.write(html);w.document.close()}
+
+// ---- Sprache ----
+function normUnit(t){const x=t.toLowerCase().trim();if(/quadratmeter|qm/.test(x))return 'm²';if(/kubik/.test(x))return 'm³';if(/lauf(ende[rn]?)? ?meter|laufmeter|lfm/.test(x))return 'lfm';if(/st(ü|ue)ck|stk/.test(x))return 'Stk.';if(/pauschal|psch/.test(x))return 'Psch.';if(/^meter$|^m$/.test(x))return 'm';return t.trim()}
+function numFrom(s){const m=s.replace(/[.,]/g,' . ').replace(/\bkomma\b/gi,' . ').match(/\d+\s*\.?\s*\d*/);return m?m[0].replace(/\s/g,'').replace('.',','):''}
+function voicePos(){voice(t=>fillPosSpeech(t),'text')}
+function fillPosSpeech(t){
+  const low=t.toLowerCase();
+  // Berechnungsart automatisch anpassen anhand genannter Maße
+  const hasB=/\bbreite\b/.test(low),hasH=/\bh(ö|oe)he\b/.test(low),hasW=/\bwert\b/.test(low),hasL=/\bl(ä|ae)nge\b/.test(low);
+  if(hasW&&!hasL)editCalc('direkt');else if(hasH&&!hasB)editCalc('laengehoehe');else if(hasB)editCalc('flaeche');
+  const re=/\b(beschreibung|bezeichnung|l(?:ä|ae)nge|breite|h(?:ö|oe)he|wert|anzahl|menge|abzug|einheit)\b\s*:?\s*/gi;
+  const marks=[];let m;while((m=re.exec(t))!==null){marks.push({key:m[1].toLowerCase(),start:m.index,vs:re.lastIndex})}
+  if(!marks.length){document.getElementById('eLabel').value=t.trim();return}
+  for(let i=0;i<marks.length;i++){const end=i+1<marks.length?marks[i+1].start:t.length;const raw=t.slice(marks[i].vs,end).trim().replace(/[.,;]+$/,'');const k=marks[i].key;
+    if(/beschreibung|bezeichnung/.test(k)){document.getElementById('eLabel').value=raw}
+    else if(/l(ä|ae)nge/.test(k)){const e=document.getElementById('ef_laenge');if(e)e.value=numFrom(raw)}
+    else if(/breite/.test(k)){const e=document.getElementById('ef_breite');if(e)e.value=numFrom(raw)}
+    else if(/h(ö|oe)he/.test(k)){const e=document.getElementById('ef_hoehe');if(e)e.value=numFrom(raw)}
+    else if(/wert/.test(k)){const e=document.getElementById('ef_wert');if(e)e.value=numFrom(raw)}
+    else if(/anzahl|menge/.test(k)){document.getElementById('eAnz').value=numFrom(raw)||'1'}
+    else if(/abzug/.test(k)){document.getElementById('eAbzug').value=numFrom(raw)||'0'}
+    else if(/einheit/.test(k)){document.getElementById('eEinheit').value=normUnit(raw)}
+  }
+  liveRes();toast('Position übernommen')
+}
+function voiceKunde(){voice(t=>fillKundeSpeech(t),'text')}
+function fillKundeSpeech(t){
+  const map={name:'ik',adresse:'ia',objekt:'ibvh',bauvorhaben:'ibvh',bvh:'ibvh',bv:'ibvh',telefon:'itel',tel:'itel',handy:'itel',nummer:'itel',etage:'ietage',stock:'ietage',stockwerk:'ietage',geschoss:'ietage'};
+  const re=/\b(name|adresse|bauvorhaben|objekt|bvh|bv|telefon|tel|handy|nummer|etage|stockwerk|stock|geschoss)\b\s*:?\s*/gi;
+  const marks=[];let m;while((m=re.exec(t))!==null){marks.push({key:m[1].toLowerCase(),start:m.index,vs:re.lastIndex})}
+  if(!marks.length){document.getElementById('ik').value=t.trim();onKd();toast('Nur Name erkannt – Schlüsselwörter nutzen');return}
+  for(let i=0;i<marks.length;i++){const end=i+1<marks.length?marks[i+1].start:t.length;let val=t.slice(marks[i].vs,end).trim().replace(/[.,;]+$/,'');const id=map[marks[i].key];if(id&&val)document.getElementById(id).value=val}
+  onKd();toast('Kundendaten übernommen')
+}
+function voice(cb,mode){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Spracheingabe nicht verfügbar',true);return}const r=new SR();r.lang='de-DE';r.interimResults=false;r.maxAlternatives=1;toast('🎤 Sprich jetzt…');r.onresult=e=>{let t=e.results[0][0].transcript.trim();if(mode==='text'){cb(t);return}const num=t.replace(/[.,]/g,' . ').replace(/\bkomma\b/gi,' . ').match(/\d+\s*\.?\s*\d*/);cb(num?num[0].replace(/\s/g,'').replace('.',','):t)};r.onerror=e=>toast('Sprachfehler: '+(e.error==='network'?'Internet nötig':e.error),true);r.start()}
+
+function close_(id){document.getElementById(id).classList.remove('open')}
+
+// ---- Init ----
+(async function(){setAccent('#3b82f6');renderNav();try{db=await openDB();CUSTOM=(await metaGet('custom'))||{}}catch(e){toast('Speicher nicht verfügbar',true)}goOrdner()})();
+</script>
+</body>
+</html>
