@@ -154,9 +154,10 @@ textarea.inp{min-height:56px;resize:vertical}
   </div>
   <div class="card">
     <span class="lbl">📷 Fotos</span>
-    <div class="frow"><button class="btn btg" style="flex:1" onclick="document.getElementById('fin').click()">📷 Foto hinzufügen</button></div>
+    <div class="frow"><button class="btn btg" style="flex:1" onclick="document.getElementById('fin-cam').click()">📷 Kamera</button><button class="btn btg" style="flex:1" onclick="document.getElementById('fin-gal').click()">🖼️ Galerie</button></div>
     <div id="fgrid"></div>
-    <input type="file" id="fin" accept="image/*" capture="environment" multiple style="display:none" onchange="fotoAdd(event)"/>
+    <input type="file" id="fin-cam" accept="image/*" capture="environment" style="display:none" onchange="fotoAdd(event)"/>
+    <input type="file" id="fin-gal" accept="image/*" multiple style="display:none" onchange="fotoAdd(event)"/>
   </div>
 </div>
 
@@ -209,9 +210,10 @@ textarea.inp{min-height:56px;resize:vertical}
       <span>Abzugsposition (wird vom Gesamt subtrahiert)</span>
     </label>
     <span class="lbl">📷 Fotos zu dieser Position</span>
-    <button class="btn btg bblk" onclick="document.getElementById('posfin').click()">📷 Foto hinzufügen</button>
+    <div class="frow"><button class="btn btg" style="flex:1" onclick="document.getElementById('posfin-cam').click()">📷 Kamera</button><button class="btn btg" style="flex:1" onclick="document.getElementById('posfin-gal').click()">🖼️ Galerie</button></div>
     <div id="posfgrid"></div>
-    <input type="file" id="posfin" accept="image/*" capture="environment" multiple style="display:none" onchange="posFotoAdd(event)"/>
+    <input type="file" id="posfin-cam" accept="image/*" capture="environment" style="display:none" onchange="posFotoAdd(event)"/>
+    <input type="file" id="posfin-gal" accept="image/*" multiple style="display:none" onchange="posFotoAdd(event)"/>
     <div class="resbox"><div class="rc"><div class="rl">Ergebnis</div><div class="rv" id="eRes" style="color:var(--accent)">0,00</div></div>
     <div class="rc"><div class="rl">Umfang</div><div class="rv" id="eUmf">–</div></div></div>
     <div class="frow" style="margin-top:14px">

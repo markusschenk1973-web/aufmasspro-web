@@ -1,5 +1,5 @@
 // AufmaßPro Service Worker
-const CACHE = 'aufmasspro-v8';
+const CACHE = 'aufmasspro-v9';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function(e){
