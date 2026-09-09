@@ -144,7 +144,7 @@ textarea.inp{min-height:56px;resize:vertical}
     <div><span class="lbl" id="s3g">Trockenbau</span><h2 id="s3r" style="font-size:20px;font-weight:800;margin:0"></h2></div>
     <button class="btn sm" onclick="go(2)">← Räume</button>
   </div>
-  <button class="btn bblk" onclick="openWaehlen()">+ Position wählen</button>
+  <button class="btn bblk" onclick="openWaehlenFresh()">+ Position wählen</button>
   <button class="btn btg bblk" onclick="uebernahmeStart()">↳ Werte aus anderem Gewerk übernehmen</button>
   <div id="plist"></div>
   <div class="card">
@@ -403,6 +403,60 @@ const STD={
     {id:'t_an_acryl',label:'Acrylanschlüsse',calc:'direkt',einheit:'lfm',grp:'Sonstiges'},
     // Abzug
     {id:'t_abzug',label:'Abzug Türen/Fenster',calc:'flaeche',einheit:'m²',abzug:true,grp:'Sonstiges'},
+    // Nebenarbeiten GK-Metallständerwände / Vorsatzschalen (Kategorie Wände)
+    {id:'t_nw_zulbepl',label:'Zulage für zusätzliche Beplankungen',calc:'laengehoehe',einheit:'m²',grp:'Wände'},
+    {id:'t_nw_zulstaender',label:'Zulage für verringerten Ständerabstand',calc:'laengehoehe',einheit:'m²',grp:'Wände'},
+    {id:'t_nw_verstinst',label:'Verstärkungen für Installationseinbauten',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_spachtelklein',label:'Verspachtelungen / Schleifen / Kleinmengen',calc:'laengehoehe',einheit:'m²',grp:'Wände'},
+    {id:'t_nw_anschelast',label:'Elastischer Decken- und Wandanschluss',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_anschgleit',label:'Gleitender Decken- und Wandanschluss',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_bodenanschl',label:'Bodenanschluss und Sockelausbildungen',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_redufassade',label:'Reduzier-Fassadenanschluss',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_tverbwand',label:'T-Verbindung Wandanschluss',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_tverbeck',label:'T-Verbindung / Eckausbildung / Freistehende Wandenden',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_dehnfuge',label:'Bewegungs- und Dehnungsfugen / Bilderleisten',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_abschlussprof',label:'Einfass-, Anschluss- und Abschlussprofile',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_wandaussp',label:'Herstellen/Schließen rechteckiger & runder Wandaussparungen',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_tuercw',label:'Türaussparung Metallständerwand – CW-Profile',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_tuerua',label:'Türaussparung Metallständerwand – UA-Profile',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_tuertele',label:'Türaussparung Metallständerwand – Teleskopstütze',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_fensterua',label:'Fensteröffnung Metallständerwand – UA-Profile',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_fenstercw',label:'Fensteröffnung Metallständerwand – CW-Profile',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    {id:'t_nw_lumino',label:'Protektor – LED-Lichtdesign Lumino',calc:'direkt',einheit:'lfm',grp:'Wände'},
+    {id:'t_nw_risyschott',label:'RiSySchott – Schottsystem bis Schotthöhe 1500 mm',calc:'direkt',einheit:'Stk.',grp:'Wände'},
+    // Decken – GK-Systeme
+    {id:'t_dk_bekl_holz',label:'GK-Deckenbekleidung mit Holz-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dk_bekl_metall',label:'GK-Deckenbekleidung mit Metall-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dk_ud_holz',label:'GK-Unterdecke mit Holz-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dk_ud_metall',label:'GK-Unterdecke mit Metall-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dk_brand',label:'GK-Unterdecke Brandschutzdecke',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dk_revision',label:'Revisionsklappen / Revisionstüren',calc:'direkt',einheit:'Stk.',grp:'Decken'},
+    {id:'t_dk_weitspann',label:'Weitspanntechnik mit UA-Profilen',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    // Decken – Nebenarbeiten (Auswahl)
+    {id:'t_dn_aussp',label:'Deckenaussparungen (rechteckig/rund)',calc:'direkt',einheit:'Stk.',grp:'Decken'},
+    {id:'t_dn_schatten',label:'Auflagewinkel-/Schattenfugen-/Fugenversiegelungen',calc:'direkt',einheit:'lfm',grp:'Decken'},
+    {id:'t_dn_profile',label:'Einfass-, Anschluss- und Abschlussprofile (Decke)',calc:'direkt',einheit:'lfm',grp:'Decken'},
+    {id:'t_dn_schallauflage',label:'Deckenauflagen Schallschluck/Mineralfaser',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dn_spachtel',label:'Verspachtelungen / Schleifen / Kleinmengen (Decke)',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dn_zulagen',label:'Zulagen Beplankung / Anschnitte (Decke)',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_dn_lichtkuppel',label:'Lichtkuppelverkleidungen (GK/Span)',calc:'direkt',einheit:'Stk.',grp:'Decken'},
+    {id:'t_dn_verkoffer',label:'Verkofferungen 2-/3-seitig (Decke)',calc:'direkt',einheit:'lfm',grp:'Decken'},
+    // Decken – Abhangdecken (Gipsplatten-Deckensysteme)
+    {id:'t_ad_holz',label:'Abhangdecke mit Holz-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_ad_metall',label:'Abhangdecke mit Metall-UK',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_ad_feucht',label:'Abhangdecke mit Metall-UK Feuchtraum',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_ad_niveau',label:'Abhangdecke mit Metall-UK niveaugleich',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_ad_weit',label:'Abhangdecke mit Metall-UK weitspannend',calc:'flaeche',einheit:'m²',grp:'Decken'},
+    {id:'t_ad_fries',label:'Deckenfriese aus Gipsplatten 1-lagig',calc:'direkt',einheit:'lfm',grp:'Decken'},
+    // Dachgeschoss – Ergänzungen
+    {id:'t_dg_ausbau',label:'Dachgeschossausbau / Balken- & Drempelbekleidung',calc:'flaeche',einheit:'m²',grp:'Dachgeschoss'},
+    {id:'t_dg_bodentreppe',label:'Bodentreppe',calc:'direkt',einheit:'Stk.',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_h40',label:'Aufdopplung Sparren – Holzlatten 40 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_h60',label:'Aufdopplung Sparren – Holzlatten 60 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_h80',label:'Aufdopplung Sparren – Holzlatten 80 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_x30',label:'Aufdopplung Sparren – XPS 30 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_x60',label:'Aufdopplung Sparren – XPS 60 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
+    {id:'t_dg_sparren_x80',label:'Aufdopplung Sparren – XPS 80 mm',calc:'direkt',einheit:'lfm',grp:'Dachgeschoss'},
     // Boden (Trockenbau)
     {id:'t_bo_estrichelem',label:'Trockenestrichelemente verlegen',calc:'flaeche',einheit:'m²',grp:'Boden'},
     {id:'t_bo_schuettung',label:'Ausgleichsschüttung',calc:'flaeche',einheit:'m²',grp:'Boden'},
@@ -756,6 +810,8 @@ const dbDel=id=>new Promise((res,rej)=>{const r=tx('aufmasse','readwrite').delet
 const metaGet=k=>new Promise((res,rej)=>{const r=tx('meta','readonly').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const metaPut=(k,v)=>new Promise((res,rej)=>{const r=tx('meta','readwrite').put(v,k);r.onsuccess=()=>res(1);r.onerror=()=>rej(r.error)});
 let CUSTOM={};
+let OVERRIDES={};/*{gewerk:{id:label}}*/
+let HIDDEN={};/*{gewerk:[ids]}*/
 
 // ---- Utils ----
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
@@ -766,7 +822,9 @@ function gw(){return GEWERKE.find(g=>g.id===aktGewerk)}
 function setAccent(c){document.documentElement.style.setProperty('--accent',c)}
 function calcWert(p){const f=p.felder||{};let w=0;if(p.calc==='flaeche')w=toNum(f.laenge)*toNum(f.breite);else if(p.calc==='laengehoehe')w=toNum(f.laenge)*toNum(f.hoehe);else w=toNum(f.wert);w*=(p.faktor||1)*(toNum(p.anzahl)||1);w-=toNum(p.abzug);return w<0?0:w}
 function calcUmfang(p){const f=p.felder||{};if(p.calc==='flaeche')return 2*(toNum(f.laenge)+toNum(f.breite))*(p.faktor||1);if(p.calc==='laengehoehe')return 2*(toNum(f.laenge)+toNum(f.hoehe))*(p.faktor||1);return 0}
-function allStd(g){return [...(STD[g]||[]),...PAUSCHAL,...(CUSTOM[g]||[])]}
+function effLabel(g,item){const o=(OVERRIDES[g]||{})[item.id];return o||item.label;}
+function allStdRaw(g){return [...(STD[g]||[]),...PAUSCHAL,...(CUSTOM[g]||[])];}
+function allStd(g){const hid=HIDDEN[g]||[];return allStdRaw(g).filter(x=>!hid.includes(x.id)).map(x=>Object.assign({},x,{label:effLabel(g,x)}));}
 
 // ---- Speicherung laufend ----
 let sT=null;function save(){if(!A)return;clearTimeout(sT);sT=setTimeout(()=>{A.datum=new Date().toISOString();dbPut(A).catch(()=>toast('Speichern fehlgeschlagen',true))},300)}
@@ -824,13 +882,14 @@ let _openCat=null; // aktuell aufgeklappte Kategorie im Auswahl-Sheet
 // gewünschte Reihenfolge der Oberkategorien je Gewerk
 const CAT_ORDER={trockenbau:['Wände','Decken','Boden','Dachgeschoss','Sonstiges'],maler:['Wände','Decken','Sonstiges'],fliesen:['Wand','Boden','Sonstiges'],boden:['Baustelle/Schutz','Altbelag','Entsorgung','Untergrund prüfen','Untergrund vorbereiten','Spachtel/Ausgleich','Feuchtigkeitsschutz','Trittschall/Unterlage','Vinyl/Design','Laminat','Parkett','Linoleum/PVC/Kautschuk','Sockelleisten','Übergänge/Profile','Türbereiche','Ausschnitte','Treppen','Abschluss']};
 function catSort(gw,keys){const order=CAT_ORDER[gw]||[];const known=order.filter(k=>keys.includes(k));const extra=keys.filter(k=>!order.includes(k)).sort();return [...known,...extra];}
+function openWaehlenFresh(){_openCat=null;openWaehlen();}
 function openWaehlen(){
   const arr=allStd(aktGewerk);
   // nach Gruppe bündeln
   const groups={};
   arr.forEach(s=>{const g=s.grp||'Sonstiges';(groups[g]=groups[g]||[]).push(s);});
   const cats=catSort(aktGewerk,Object.keys(groups));
-  if(_openCat===null||!cats.includes(_openCat))_openCat=cats[0]||null;
+  // Standard: alle Kategorien geschlossen; nur die vom Nutzer geöffnete bleibt offen
   const g=gw();
   let html='';
   cats.forEach(cat=>{
@@ -840,15 +899,37 @@ function openWaehlen(){
       <span>${esc(cat.toUpperCase())} <span style="color:#4a5568;font-weight:600;font-size:12px">(${items.length})</span></span>
       <span style="color:${open?g.color:'#4a5568'}">${open?'▾':'▸'}</span></button>`;
     if(open){
-      html+=items.map(s=>`<button class="catbtn" oncontextmenu="return tplMenu(event,'${s.id}')" onclick="addFromStd('${s.id}')"><span>${esc(s.label)}${s.custom?' ★':''}</span><span class="u">${esc(s.einheit)}</span></button>`).join('');
+      html+=items.map(s=>`<div style="display:flex;align-items:stretch;gap:6px;margin-bottom:8px">
+        <button class="catbtn" style="flex:1;margin:0" onclick="addFromStd('${s.id}')"><span>${esc(s.label)}${s.custom?' ★':''}</span><span class="u">${esc(s.einheit)}</span></button>
+        <button class="posedit" onclick="event.stopPropagation();posMenu('${s.id}')" title="Bearbeiten" style="flex-shrink:0;width:44px;border:1.5px solid #222537;border-radius:10px;background:#12141c;color:#4a5568;font-size:16px;cursor:pointer">✎</button>
+      </div>`).join('');
     }
   });
+  const hid=HIDDEN[aktGewerk]||[];
+  if(hid.length){html+=`<button class="btn btg bblk" style="margin-top:10px" onclick="showHidden()">👁 ${hid.length} ausgeblendete wieder anzeigen</button>`;}
   document.getElementById('catlist').innerHTML=html;
   document.getElementById('ovWaehlen').classList.add('open');
 }
 function toggleCat(cat){_openCat=(_openCat===cat)?null:cat;openWaehlen();}
+function showHidden(){const hid=HIDDEN[aktGewerk]||[];if(!hid.length)return;const list=hid.map(id=>{const it=allStdRaw(aktGewerk).find(x=>x.id===id);return it?effLabel(aktGewerk,it):id;});const w=prompt('Ausgeblendete Positionen:\n'+list.map((l,i)=>(i+1)+' = '+l).join('\n')+'\n\n0 = ALLE wieder anzeigen\nZahl eingeben:','0');if(w===null)return;const n=parseInt(w.trim());if(n===0){HIDDEN[aktGewerk]=[];}else if(n>=1&&n<=hid.length){hid.splice(n-1,1);}metaPut('hidden',HIDDEN);toast('Wieder sichtbar');openWaehlen();}
 function addFromStd(id){const s=allStd(aktGewerk).find(x=>x.id===id);if(!s)return;const p={id:'p'+Date.now(),label:s.label,calc:s.calc,einheit:s.einheit,felder:{},anzahl:1,abzug:0,isAbzug:!!s.abzug,faktor:1,gruppe:s.grp||'Positionen',staender:!!s.staender};posArr().push(p);save();close_('ovWaehlen');renderPos();openEdit(posArr().length-1)}
-function tplMenu(e,id){e.preventDefault();const s=(CUSTOM[aktGewerk]||[]).find(x=>x.id===id);if(!s){toast('Nur eigene Vorlagen',true);return false}const a=prompt('Vorlage umbenennen (leer = löschen):',s.label);if(a===null)return false;if(a.trim()===''){CUSTOM[aktGewerk]=CUSTOM[aktGewerk].filter(x=>x.id!==id);toast('Vorlage gelöscht')}else{s.label=a.trim();toast('Umbenannt')}metaPut('custom',CUSTOM);openWaehlen();return false}
+function posMenu(id){
+  const isCustom=(CUSTOM[aktGewerk]||[]).some(x=>x.id===id);
+  const cur=allStd(aktGewerk).find(x=>x.id===id); if(!cur)return;
+  const wahl=prompt('Position bearbeiten:\n1 = Umbenennen\n2 = Ausblenden'+(isCustom?'\n3 = Löschen (eigene)':'')+'\n\nZahl eingeben:','1');
+  if(wahl===null)return;
+  if(wahl.trim()==='1'){
+    const neu=prompt('Neue Bezeichnung:',cur.label); if(neu===null||!neu.trim())return;
+    if(isCustom){const it=CUSTOM[aktGewerk].find(x=>x.id===id); it.label=neu.trim(); metaPut('custom',CUSTOM);}
+    else {if(!OVERRIDES[aktGewerk])OVERRIDES[aktGewerk]={}; OVERRIDES[aktGewerk][id]=neu.trim(); metaPut('overrides',OVERRIDES);}
+    toast('Umbenannt'); openWaehlen();
+  } else if(wahl.trim()==='2'){
+    if(!HIDDEN[aktGewerk])HIDDEN[aktGewerk]=[]; if(!HIDDEN[aktGewerk].includes(id))HIDDEN[aktGewerk].push(id); metaPut('hidden',HIDDEN);
+    toast('Ausgeblendet'); openWaehlen();
+  } else if(wahl.trim()==='3' && isCustom){
+    CUSTOM[aktGewerk]=CUSTOM[aktGewerk].filter(x=>x.id!==id); metaPut('custom',CUSTOM); toast('Gelöscht'); openWaehlen();
+  }
+}
 
 // ---- Position bearbeiten ----
 function openEdit(idx){editId=idx;const g=gw();let p;if(idx==null){p={id:'p'+Date.now(),label:'',calc:'flaeche',einheit:'m²',felder:{},anzahl:1,abzug:0,isAbzug:false,faktor:1,gruppe:'Positionen'};editStd=p;document.getElementById('editTitle').textContent='Neue Position';document.getElementById('asTplWrap').style.display='flex'}else{p=posArr()[idx];editStd=null;document.getElementById('editTitle').textContent='Position bearbeiten';document.getElementById('asTplWrap').style.display='none'}
@@ -941,7 +1022,7 @@ function voice(cb,mode){const SR=window.SpeechRecognition||window.webkitSpeechRe
 function close_(id){document.getElementById(id).classList.remove('open')}
 
 // ---- Init ----
-(async function(){setAccent('#3b82f6');renderNav();try{db=await openDB();CUSTOM=(await metaGet('custom'))||{}}catch(e){toast('Speicher nicht verfügbar',true)}goOrdner()})();
+(async function(){setAccent('#3b82f6');renderNav();try{db=await openDB();CUSTOM=(await metaGet('custom'))||{};OVERRIDES=(await metaGet('overrides'))||{};HIDDEN=(await metaGet('hidden'))||{}}catch(e){toast('Speicher nicht verfügbar',true)}goOrdner()})();
 </script>
 </body>
 </html>
